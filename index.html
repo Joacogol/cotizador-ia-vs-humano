@@ -258,11 +258,14 @@
 
         function mostrarCotizador() {
             const nombre = document.getElementById('nombre').value;
+            const codigoPais = document.getElementById('codigoPais').value;
             const whatsapp = document.getElementById('whatsapp').value;
             if (!nombre || !whatsapp || whatsapp.length < whatsappDigitos) {
                 mostrarModal();
                 return;
             }
+
+            registrarUsuario(nombre, codigoPais + whatsapp);
 
             document.getElementById('registroContainer').classList.remove('active');
             document.getElementById('cotizadorContainer').classList.add('active');
@@ -271,6 +274,35 @@
             document.getElementById('camposDatosEdit').value = document.getElementById('camposDatos').value;
 
             calcular();
+        }
+
+        function registrarUsuario(nombre, telefono) {
+            const data = {
+                contact: {
+                    name: nombre,
+                    phone: telefono
+                },
+                customFields: {
+                    Origen: "Landing Page",
+                    Email: "juan@perez.com",
+                    Ciudad: "Artigas",
+                    Modelo: "https://www.volvocars.com/uy/cars/ex30-electric/",
+                    Comentario: "Este es un comentario de prueba"
+                },
+                message: "Hola, esto es una prueba vía API."
+            };
+
+            fetch("https://ia.shock.uy/api/cm0qwd8z00001nsn6wa49hty1/crm/message", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer 1156afae-5465-4603-878c-41bbb03a0af5"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
         }
 
         function calcular() {
