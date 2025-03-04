@@ -79,6 +79,11 @@
         </div>
         <p id="ahorro"></p>
         <button onclick="restart()">Iniciar otro cálculo</button>
+        <div id="recommendation" class="hidden">
+            <h2>Califica para contratar un agente de IA</h2>
+            <button onclick="notifySalesTeam()">Quiero cotizar mi agente</button>
+        </div>
+        <p id="notification" class="hidden">Ya hemos avisado al equipo comercial para que te contacte.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -145,6 +150,15 @@
             if (leads > 1000) {
                 alert('¡Impactante ahorro! Has ingresado un número muy alto de leads.');
             }
+
+            if (dineroAhorrado > 0) {
+                document.getElementById('recommendation').classList.remove('hidden');
+            }
+        }
+
+        function notifySalesTeam() {
+            document.getElementById('recommendation').classList.add('hidden');
+            document.getElementById('notification').classList.remove('hidden');
         }
 
         function restart() {
@@ -155,6 +169,8 @@
             document.getElementById('datos').value = '';
             document.getElementById('nombre').value = '';
             document.getElementById('whatsapp').value = '';
+            document.getElementById('recommendation').classList.add('hidden');
+            document.getElementById('notification').classList.add('hidden');
         }
     </script>
 </body>
