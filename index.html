@@ -99,8 +99,8 @@
         </div>
         <div id="step3" class="results">
             <h2>Resultados</h2>
-            <div class="chart-container" id="chartContainer">
-                <!-- Chart will be rendered here -->
+            <div class="chart-container">
+                <canvas id="myChart"></canvas>
             </div>
             <div id="savingsDetails">
                 <!-- Savings details will be shown here -->
@@ -260,7 +260,7 @@
 
         // Function to render chart
         function renderChart(humanMonthlyCost, iaMonthlyCost) {
-            const ctx = document.getElementById('chartContainer').getContext('2d');
+            const ctx = document.getElementById('myChart').getContext('2d');
             new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -296,6 +296,9 @@
             document.getElementById('leadsPerDayError').innerText = '';
             document.getElementById('fieldsToCompleteError').innerText = '';
         }
+
+        // Initialize placeholder
+        updatePlaceholder();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
