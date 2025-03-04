@@ -13,7 +13,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: url('https://example.com/human-robot-handshake.jpg') no-repeat center center;
+            background: url('https://www.t-systems.com/resource/image/701850/ratio3x2/1440/960/d2cfa30de508b317b992916de785c633/0EA294CB3A4E614B5AB727282FFEB73D/im-about-t-systems.jpg') no-repeat center center;
             background-size: cover;
             color: #202123;
         }
@@ -27,19 +27,16 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
         .container {
             background-color: #fff;
-            padding: 40px 20px;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
             width: 100%;
-            display: none;
+            max-width: 400px;
             text-align: center;
-        }
-        .container.active {
-            display: block;
         }
         h1 {
             color: #10A37F;
@@ -47,13 +44,14 @@
         }
         .form-group {
             margin-bottom: 15px;
+            text-align: left;
         }
         .form-group label {
             display: block;
             margin-bottom: 5px;
         }
         .form-group input, .form-group select {
-            width: calc(100% - 22px);
+            width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -81,6 +79,13 @@
         }
         .btn:hover {
             background-color: #0e8a69;
+        }
+        .error {
+            border-color: red;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
         }
         .results {
             margin-top: 20px;
@@ -165,19 +170,11 @@
                 <input type="text" id="nombre" required>
             </div>
             <div class="form-group">
-                <label for="pais">País</label>
-                <select id="pais" onchange="actualizarCodigoPais()">
-                    <!-- Opciones de países con códigos -->
-                </select>
-            </div>
-            <div class="form-group">
                 <label for="whatsapp">Tu WhatsApp</label>
-                <div style="display: flex;">
-                    <input type="text" id="codigoPais" readonly style="width: 20%;">
-                    <input type="number" id="whatsapp" style="width: 80%;" required>
-                </div>
+                <input type="text" id="whatsapp" placeholder="+59899123456" required>
+                <small>Formato: +código de país número (Ej: +59899123456)</small>
             </div>
-            <button class="btn" onclick="guardarDatos()">Guardar</button>
+            <div class="error-message" id="errorMessage"></div>
             <button class="btn" onclick="mostrarCotizador()">Ver mi ahorro</button>
         </div>
 
@@ -208,32 +205,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        const regexWhatsapp = /^\+\d{1,3}\d{6,14}$/;
         const paises = [
-            { nombre: 'Argentina', codigo: '+54', digitos: 10 },
-            { nombre: 'Brasil', codigo: '+55', digitos: 11 },
-            { nombre: 'Chile', codigo: '+56', digitos: 9 },
-            { nombre: 'Colombia', codigo: '+57', digitos: 10 },
-            { nombre: 'México', codigo: '+52', digitos: 10 },
-            { nombre: 'Perú', codigo: '+51', digitos: 9 },
-            { nombre: 'Uruguay', codigo: '+598', digitos: 9 },
-            { nombre: 'Estados Unidos', codigo: '+1', digitos: 10 }
+            '+54', '+55', '+56', '+57', '+52', '+51', '+598', '+1'
         ];
 
         let comparisonChart;
-        let whatsappDigitos = 10;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const paisSelect = document.getElementById('pais');
-            paises.forEach(pais => {
-                const option = document.createElement('option');
-                option.value = pais.codigo;
-                option.text = `${pais.nombre} (${pais.codigo})`;
-                paisSelect.appendChild(option);
-            });
-
-            paisSelect.selectedIndex = 0;
-            actualizarCodigoPais();
-        });
 
         function mostrarRegistro() {
             const leadsDiarios = document.getElementById('leadsDiarios').value;
@@ -248,34 +225,30 @@
             document.getElementById('registroContainer').classList.add('active');
         }
 
-        function actualizarCodigoPais() {
-            const paisSelect = document.getElementById('pais');
-            const codigoPais = paisSelect.value;
-            document.getElementById('codigoPais').value = codigoPais;
-
-            const paisSeleccionado = paises.find(pais => pais.codigo === codigoPais);
-            whatsappDigitos = paisSeleccionado.digitos;
-        }
-
-        function guardarDatos() {
-            const nombre = document.getElementById('nombre').value;
-            const codigoPais = document.getElementById('codigoPais').value;
-            const whatsapp = document.getElementById('whatsapp').value;
-            if (!nombre || !whatsapp || whatsapp.length < whatsappDigitos) {
-                mostrarModal();
-                return;
-            }
-
-            registrarUsuario(nombre, codigoPais + whatsapp);
-        }
-
         function mostrarCotizador() {
             const nombre = document.getElementById('nombre').value;
             const whatsapp = document.getElementById('whatsapp').value;
-            if (!nombre || !whatsapp || whatsapp.length < whatsappDigitos) {
-                mostrarModal();
+
+            if (!nombre || !whatsapp || !regexWhatsapp.test(whatsapp)) {
+                document.getElementById('errorMessage').textContent = "Por favor, ingrese un nombre válido y un número de WhatsApp en el formato correcto.";
+                if (!nombre) {
+                    document.getElementById('nombre').classList.add('error');
+                } else {
+                    document.getElementById('nombre').classList.remove('error');
+                }
+                if (!whatsapp || !regexWhatsapp.test(whatsapp)) {
+                    document.getElementById('whatsapp').classList.add('error');
+                } else {
+                    document.getElementById('whatsapp').classList.remove('error');
+                }
                 return;
             }
+
+            document.getElementById('nombre').classList.remove('error');
+            document.getElementById('whatsapp').classList.remove('error');
+            document.getElementById('errorMessage').textContent = "";
+
+            registrarUsuario(nombre, whatsapp);
 
             document.getElementById('registroContainer').classList.remove('active');
             document.getElementById('cotizadorContainer').classList.add('active');
@@ -288,27 +261,16 @@
 
         function registrarUsuario(nombre, telefono) {
             const data = {
-                contact: {
-                    name: nombre,
-                    phone: telefono
-                },
-                customFields: {
-                    Origen: "Landing Page",
-                    Email: "juan@perez.com",
-                    Ciudad: "Artigas",
-                    Modelo: "https://www.volvocars.com/uy/cars/ex30-electric/",
-                    Comentario: "Este es un comentario de prueba"
-                },
-                message: "Hola, esto es una prueba vía API."
+                name: nombre,
+                phone: telefono
             };
 
-            fetch("https://ia.shock.uy/api/cm0qwd8z00001nsn6wa49hty1/crm/message", {
-                method: "POST",
+            fetch('https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec', {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer 1156afae-5465-4603-878c-41bbb03a0af5"
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
             })
             .then(response => response.json())
             .then(data => console.log(data))
