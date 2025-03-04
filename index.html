@@ -13,7 +13,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: url('https://www.idisc.com/hubfs/business-hand-robot-handshake-artificial-intelligence-digital-transformation.jpg') no-repeat center center;
+            background: url('https://example.com/human-robot-handshake.jpg') no-repeat center center;
             background-size: cover;
             color: #202123;
         }
@@ -177,6 +177,7 @@
                     <input type="number" id="whatsapp" style="width: 80%;" required>
                 </div>
             </div>
+            <button class="btn" onclick="guardarDatos()">Guardar</button>
             <button class="btn" onclick="mostrarCotizador()">Ver mi ahorro</button>
         </div>
 
@@ -256,7 +257,7 @@
             whatsappDigitos = paisSeleccionado.digitos;
         }
 
-        function mostrarCotizador() {
+        function guardarDatos() {
             const nombre = document.getElementById('nombre').value;
             const codigoPais = document.getElementById('codigoPais').value;
             const whatsapp = document.getElementById('whatsapp').value;
@@ -266,6 +267,15 @@
             }
 
             registrarUsuario(nombre, codigoPais + whatsapp);
+        }
+
+        function mostrarCotizador() {
+            const nombre = document.getElementById('nombre').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+            if (!nombre || !whatsapp || whatsapp.length < whatsappDigitos) {
+                mostrarModal();
+                return;
+            }
 
             document.getElementById('registroContainer').classList.remove('active');
             document.getElementById('cotizadorContainer').classList.add('active');
