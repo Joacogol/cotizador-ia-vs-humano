@@ -108,6 +108,7 @@
             <button onclick="startNewCalculation()">Iniciar otro cálculo</button>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Country codes for the selector
         const countries = [
@@ -234,8 +235,8 @@
                 iaTimePerLead = 3;
             }
 
-            const humanMonthlyTime = leadsPerDay * humanTimePerLead * 20 / 60; // In hours
-            const iaMonthlyTime = leadsPerDay * iaTimePerLead * 20 / 60; // In hours
+            const humanMonthlyTime = leadsPerDay * humanTimePerLead * 22 / 60; // In hours
+            const iaMonthlyTime = leadsPerDay * iaTimePerLead * 22 / 60; // In hours
             const humanMonthlyCost = (humanMonthlyTime / 160) * 2000;
             const iaMonthlyCost = 300;
 
@@ -300,6 +301,5 @@
         // Initialize placeholder
         updatePlaceholder();
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
