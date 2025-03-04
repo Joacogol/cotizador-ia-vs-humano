@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,324 +7,272 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #202123;
+            color: #ffffff;
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: url('https://www.t-systems.com/resource/image/701850/ratio3x2/1440/960/d2cfa30de508b317b992916de785c633/0EA294CB3A4E614B5AB727282FFEB73D/im-about-t-systems.jpg') no-repeat center center;
-            background-size: cover;
-            color: #202123;
-        }
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
         }
         .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
         }
-        h1 {
+        h1, h2 {
             color: #10A37F;
-            margin-bottom: 20px;
+            text-align: center;
         }
         .form-group {
             margin-bottom: 15px;
-            text-align: left;
         }
-        .form-group label {
+        label {
             display: block;
             margin-bottom: 5px;
         }
-        .form-group input, .form-group select {
+        input, select, button {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            border: 1px solid #565869;
             border-radius: 5px;
-            box-sizing: border-box;
         }
-        .form-group input[type="number"] {
-            -moz-appearance: textfield;
-        }
-        .form-group input[type="number"]::-webkit-outer-spin-button,
-        .form-group input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        .btn {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            background-color: #10A37F;
-            color: #fff;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
-        }
-        .btn:hover {
-            background-color: #0e8a69;
-        }
-        .error {
-            border-color: red;
+        input.error, select.error {
+            border-color: #ff0000;
         }
         .error-message {
-            color: red;
-            margin-top: 10px;
-        }
-        .results {
-            margin-top: 20px;
-        }
-        .results div {
-            padding: 10px;
-            border-radius: 5px;
+            color: #ff0000;
+            margin-top: -10px;
             margin-bottom: 10px;
         }
-        .results .time {
-            background-color: #e7f5ff;
-            color: #007bff;
+        button {
+            background-color: #10A37F;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
         }
-        .results .cost {
-            background-color: #fff3e6;
-            color: #ff8c00;
+        button:hover {
+            background-color: #0e8a6c;
         }
-        .results .savings {
-            background-color: #e6ffe6;
-            color: #2d862d;
-        }
-        .alert {
-            background-color: #ffcccc;
-            color: #ff0000;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 20px;
-            text-align: center;
+        .results {
+            display: none;
         }
         .chart-container {
-            margin-top: 20px;
             position: relative;
             height: 300px;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-        }
-        .modal-content p {
-            margin-bottom: 20px;
-        }
-        .modal-content .btn {
-            width: auto;
-            padding: 10px 20px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="overlay">
-        <div class="container active" id="preguntasContainer">
-            <h1>Datos Iniciales</h1>
+    <div class="container">
+        <h1>Cotizador IA vs Humano</h1>
+        <div id="step1">
+            <h2>Preguntas iniciales</h2>
             <div class="form-group">
-                <label for="leadsDiarios">¿Cuántos leads atienden tus agentes humanos por día?</label>
-                <input type="number" id="leadsDiarios" min="1" required>
+                <label for="leadsPerDay">¿Cuántos leads atienden tus agentes humanos por día?</label>
+                <input type="number" id="leadsPerDay" min="1" required>
+                <span class="error-message" id="leadsPerDayError"></span>
             </div>
             <div class="form-group">
-                <label for="camposDatos">¿Cuántos datos debe completar el usuario antes de ser calificado?</label>
-                <input type="number" id="camposDatos" min="1" required>
+                <label for="fieldsToComplete">¿Cuántos datos debe completar el usuario antes de ser calificado?</label>
+                <input type="number" id="fieldsToComplete" min="1" required>
+                <span class="error-message" id="fieldsToCompleteError"></span>
             </div>
-            <button class="btn" onclick="mostrarRegistro()">Continuar al cálculo</button>
+            <button onclick="goToStep2()">Continuar al cálculo</button>
         </div>
-
-        <div class="container" id="registroContainer">
-            <h1>Registro</h1>
+        <div id="step2" style="display:none;">
+            <h2>Registro obligatorio antes de calcular</h2>
             <div class="form-group">
-                <label for="nombre">Tu nombre</label>
-                <input type="text" id="nombre" required>
+                <label for="name">Tu nombre</label>
+                <input type="text" id="name" required>
+                <span class="error-message" id="nameError"></span>
             </div>
             <div class="form-group">
-                <label for="whatsapp">Tu WhatsApp</label>
-                <input type="text" id="whatsapp" placeholder="+59899123456" required>
-                <small>Formato: +código de país número (Ej: +59899123456)</small>
+                <label for="whatsapp">WhatsApp</label>
+                <div style="display: flex;">
+                    <select id="countryCode" onchange="updatePlaceholder()">
+                        <!-- List of countries with their codes -->
+                    </select>
+                    <input type="tel" id="whatsapp" placeholder="e.g. 1234567890" required>
+                </div>
+                <span class="error-message" id="whatsappError"></span>
             </div>
-            <div class="error-message" id="errorMessage"></div>
-            <button class="btn" onclick="mostrarCotizador()">Ver mi ahorro</button>
+            <button onclick="calculateSavings()">Ver mi ahorro</button>
         </div>
-
-        <div class="container" id="cotizadorContainer">
-            <h1>Resultados del Ahorro</h1>
-            <div class="results" id="results"></div>
-            <div class="form-group">
-                <label for="leadsDiariosEdit">Leads diarios atendidos:</label>
-                <input type="number" id="leadsDiariosEdit" min="1" onchange="actualizarCalculos()">
+        <div id="step3" class="results">
+            <h2>Resultados</h2>
+            <div class="chart-container" id="chartContainer">
+                <!-- Chart will be rendered here -->
             </div>
-            <div class="form-group">
-                <label for="camposDatosEdit">Campos de datos completados:</label>
-                <input type="number" id="camposDatosEdit" min="1" onchange="actualizarCalculos()">
+            <div id="savingsDetails">
+                <!-- Savings details will be shown here -->
             </div>
-            <div class="chart-container">
-                <canvas id="comparisonChart"></canvas>
-            </div>
-            <button class="btn" onclick="reiniciar()">Iniciar otro cálculo</button>
-        </div>
-
-        <div class="modal" id="modalAviso">
-            <div class="modal-content">
-                <p>Por favor, complete todos los campos para continuar.</p>
-                <button class="btn" onclick="cerrarModal()">Cerrar</button>
-            </div>
+            <button onclick="startNewCalculation()">Iniciar otro cálculo</button>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const regexWhatsapp = /^\+\d{1,3}\d{6,14}$/;
-        const paises = [
-            '+54', '+55', '+56', '+57', '+52', '+51', '+598', '+1'
+        // Country codes for the selector
+        const countries = [
+            { name: "Argentina", code: "+54" },
+            { name: "Brazil", code: "+55" },
+            { name: "Chile", code: "+56" },
+            { name: "Colombia", code: "+57" },
+            { name: "Mexico", code: "+52" },
+            { name: "Peru", code: "+51" },
+            { name: "Uruguay", code: "+598" },
+            { name: "Venezuela", code: "+58" }
+            // You can add all countries here with their respective codes
         ];
 
-        let comparisonChart;
+        // Populate the country code selector
+        const countryCodeSelect = document.getElementById('countryCode');
+        countries.forEach(country => {
+            const option = document.createElement('option');
+            option.value = country.code;
+            option.text = `${country.name} (${country.code})`;
+            countryCodeSelect.appendChild(option);
+        });
 
-        function mostrarRegistro() {
-            const leadsDiarios = document.getElementById('leadsDiarios').value;
-            const camposDatos = document.getElementById('camposDatos').value;
-
-            if (!leadsDiarios || !camposDatos) {
-                mostrarModal();
-                return;
-            }
-
-            document.getElementById('preguntasContainer').classList.remove('active');
-            document.getElementById('registroContainer').classList.add('active');
+        // Update the placeholder based on the selected country code
+        function updatePlaceholder() {
+            const selectedCode = document.getElementById('countryCode').value;
+            document.getElementById('whatsapp').placeholder = `${selectedCode} 1234567890`;
         }
 
-        function mostrarCotizador() {
-            const nombre = document.getElementById('nombre').value;
+        // Function to go to the second step
+        function goToStep2() {
+            const leadsPerDay = document.getElementById('leadsPerDay').value;
+            const fieldsToComplete = document.getElementById('fieldsToComplete').value;
+            let valid = true;
+
+            if (!leadsPerDay) {
+                document.getElementById('leadsPerDayError').innerText = 'Este campo es obligatorio.';
+                valid = false;
+            } else {
+                document.getElementById('leadsPerDayError').innerText = '';
+            }
+
+            if (!fieldsToComplete) {
+                document.getElementById('fieldsToCompleteError').innerText = 'Este campo es obligatorio.';
+                valid = false;
+            } else {
+                document.getElementById('fieldsToCompleteError').innerText = '';
+            }
+
+            if (valid) {
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step2').style.display = 'block';
+            }
+        }
+
+        // Function to calculate savings and show results
+        function calculateSavings() {
+            const name = document.getElementById('name').value;
             const whatsapp = document.getElementById('whatsapp').value;
+            const countryCode = document.getElementById('countryCode').value;
+            let valid = true;
 
-            if (!nombre || !whatsapp || !regexWhatsapp.test(whatsapp)) {
-                document.getElementById('errorMessage').textContent = "Por favor, ingrese un nombre válido y un número de WhatsApp en el formato correcto.";
-                if (!nombre) {
-                    document.getElementById('nombre').classList.add('error');
-                } else {
-                    document.getElementById('nombre').classList.remove('error');
-                }
-                if (!whatsapp || !regexWhatsapp.test(whatsapp)) {
-                    document.getElementById('whatsapp').classList.add('error');
-                } else {
-                    document.getElementById('whatsapp').classList.remove('error');
-                }
-                return;
+            if (!name) {
+                document.getElementById('nameError').innerText = 'Este campo es obligatorio.';
+                valid = false;
+            } else {
+                document.getElementById('nameError').innerText = '';
             }
 
-            document.getElementById('nombre').classList.remove('error');
-            document.getElementById('whatsapp').classList.remove('error');
-            document.getElementById('errorMessage').textContent = "";
+            if (!whatsapp) {
+                document.getElementById('whatsappError').innerText = 'Este campo es obligatorio.';
+                valid = false;
+            } else {
+                document.getElementById('whatsappError').innerText = '';
+            }
 
-            registrarUsuario(nombre, whatsapp);
+            // Validate WhatsApp number length based on country code
+            const whatsappNumber = whatsapp.replace(countryCode, '').replace(/\s/g, '');
+            if (countryCode === "+54" && whatsappNumber.length !== 10) {
+                document.getElementById('whatsappError').innerText = 'Número de teléfono incorrecto.';
+                valid = false;
+            } else if (countryCode === "+55" && whatsappNumber.length !== 11) {
+                document.getElementById('whatsappError').innerText = 'Número de teléfono incorrecto.';
+                valid = false;
+            } else if (countryCode === "+56" && whatsappNumber.length !== 9) {
+                document.getElementById('whatsappError').innerText = 'Número de teléfono incorrecto.';
+                valid = false;
+            } else if (countryCode === "+57" && whatsappNumber.length !== 10) {
+                document.getElementById('whatsappError').innerText = 'Número de teléfono incorrecto.';
+                valid = false;
+            } else if (countryCode === "+52" && whatsappNumber.length !== 10) {
+                document.getElementById('whatsappError').innerText = 'Número de teléfono incorrecto.';
+                valid = false;
+            } else if (countryCode === "+51" && whatsappNumber.length !== 9) {
+                document.getElementById('whatsappError').innerText = 'Número de teléfono incorrecto.';
+                valid = false;
+            } else if (countryCode === "+598" && whatsappNumber.length !== 8) {
+                document.getElementById('whatsappError').innerText = 'Número de teléfono incorrecto.';
+                valid = false;
+            } else if (countryCode === "+58" && whatsappNumber.length !== 10) {
+                document.getElementById('whatsappError').innerText = 'Número de teléfono incorrecto.';
+                valid = false;
+            }
 
-            document.getElementById('registroContainer').classList.remove('active');
-            document.getElementById('cotizadorContainer').classList.add('active');
-
-            document.getElementById('leadsDiariosEdit').value = document.getElementById('leadsDiarios').value;
-            document.getElementById('camposDatosEdit').value = document.getElementById('camposDatos').value;
-
-            calcular();
+            if (valid) {
+                document.getElementById('step2').style.display = 'none';
+                document.getElementById('step3').style.display = 'block';
+                // Do calculations and show results here
+                showResults();
+            }
         }
 
-        function registrarUsuario(nombre, telefono) {
-            const data = {
-                name: nombre,
-                phone: telefono
-            };
+        // Function to show results
+        function showResults() {
+            const leadsPerDay = parseInt(document.getElementById('leadsPerDay').value);
+            const fieldsToComplete = parseInt(document.getElementById('fieldsToComplete').value);
 
-            fetch('https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
+            let humanTimePerLead, iaTimePerLead;
+            if (fieldsToComplete <= 5) {
+                humanTimePerLead = 15;
+                iaTimePerLead = 2;
+            } else {
+                humanTimePerLead = 35;
+                iaTimePerLead = 3;
+            }
+
+            const humanMonthlyTime = leadsPerDay * humanTimePerLead * 20 / 60; // In hours
+            const iaMonthlyTime = leadsPerDay * iaTimePerLead * 20 / 60; // In hours
+            const humanMonthlyCost = (humanMonthlyTime / 160) * 2000;
+            const iaMonthlyCost = 300;
+
+            const timeSaved = humanMonthlyTime - iaMonthlyTime;
+            const moneySaved = humanMonthlyCost - iaMonthlyCost;
+
+            // Show results
+            const savingsDetails = document.getElementById('savingsDetails');
+            savingsDetails.innerHTML = `
+                <p>Tiempo ahorrado: ${timeSaved.toFixed(2)} horas/mes</p>
+                <p>Dinero ahorrado: ${moneySaved.toFixed(2)} USD/mes</p>
+            `;
+
+            // Render chart
+            renderChart(humanMonthlyCost, iaMonthlyCost);
+
+            // Alert for high lead numbers
+            if (leadsPerDay > 1000) {
+                alert('¡Ahorro impactante! Estás ahorrando una gran cantidad de tiempo y dinero.');
+            }
         }
 
-        function calcular() {
-            const leadsDiarios = document.getElementById('leadsDiariosEdit').value;
-            const camposDatos = document.getElementById('camposDatosEdit').value;
-            const results = document.getElementById('results');
-            results.innerHTML = '';
-
-            const tiempoHumanoPorLead = camposDatos <= 5 ? 15 : 35;
-            const tiempoIAPorLead = camposDatos <= 5 ? 2 : 3;
-
-            const tiempoMensualHumano = (leadsDiarios * tiempoHumanoPorLead / 60) * 22;
-            const tiempoMensualIA = (leadsDiarios * tiempoIAPorLead / 60) * 22;
-
-            const costoMensualHumano = (tiempoMensualHumano / 160) * 2000;
-            const costoMensualIA = 300;
-
-            const tiempoAhorrado = tiempoMensualHumano - tiempoMensualIA;
-            const dineroAhorrado = costoMensualHumano - costoMensualIA;
-
-            const ahorroMayor50 = dineroAhorrado > (costoMensualHumano * 0.5);
-
-            results.innerHTML += `<div class="time">Tiempo mensual invertido: Humano - ${tiempoMensualHumano.toFixed(2)} horas, IA - ${tiempoMensualIA.toFixed(2)} horas</div>`;
-            results.innerHTML += `<div class="cost">Costo mensual: Humano - $${costoMensualHumano.toFixed(2)}, IA - $${costoMensualIA.toFixed(2)}</div>`;
-            results.innerHTML += `<div class="savings">Ahorro total: Tiempo - ${tiempoAhorrado.toFixed(2)} horas, Dinero - $${dineroAhorrado.toFixed(2)}</div>`;
-
-            if (ahorroMayor50) {
-                results.innerHTML += `<div class="alert">¡Ahorro mayor al 50% del costo humano!</div>`;
-            }
-
-            if (comparisonChart) {
-                comparisonChart.destroy();
-            }
-
-            const ctx = document.getElementById('comparisonChart').getContext('2d');
-            comparisonChart = new Chart(ctx, {
+        // Function to render chart
+        function renderChart(humanMonthlyCost, iaMonthlyCost) {
+            const ctx = document.getElementById('chartContainer').getContext('2d');
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Humano', 'IA'],
+                    labels: ['Agente Humano', 'Agente IA'],
                     datasets: [{
-                        label: 'Tiempo mensual (horas)',
-                        data: [tiempoMensualHumano, tiempoMensualIA],
+                        label: 'Costo Mensual (USD)',
+                        data: [humanMonthlyCost, iaMonthlyCost],
                         backgroundColor: ['#10A37F', '#565869']
-                    }, {
-                        label: 'Costo mensual (USD)',
-                        data: [costoMensualHumano, costoMensualIA],
-                        backgroundColor: ['#e7f5ff', '#fff3e6']
                     }]
                 },
                 options: {
+                    responsive: true,
                     scales: {
                         y: {
                             beginAtZero: true
@@ -334,27 +282,21 @@
             });
         }
 
-        function actualizarCalculos() {
-            calcular();
-        }
-
-        function reiniciar() {
-            document.getElementById('preguntasContainer').classList.add('active');
-            document.getElementById('registroContainer').classList.remove('active');
-            document.getElementById('cotizadorContainer').classList.remove('active');
-            document.getElementById('leadsDiarios').value = '';
-            document.getElementById('camposDatos').value = '';
-            document.getElementById('nombre').value = '';
+        // Function to start new calculation
+        function startNewCalculation() {
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('leadsPerDay').value = '';
+            document.getElementById('fieldsToComplete').value = '';
+            document.getElementById('name').value = '';
             document.getElementById('whatsapp').value = '';
-        }
-
-        function mostrarModal() {
-            document.getElementById('modalAviso').style.display = 'flex';
-        }
-
-        function cerrarModal() {
-            document.getElementById('modalAviso').style.display = 'none';
+            document.getElementById('whatsappError').innerText = '';
+            document.getElementById('nameError').innerText = '';
+            document.getElementById('leadsPerDayError').innerText = '';
+            document.getElementById('fieldsToCompleteError').innerText = '';
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
