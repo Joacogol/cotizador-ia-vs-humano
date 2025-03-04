@@ -57,6 +57,27 @@
             height: 300px;
             width: 100%;
         }
+        .highlight-button {
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #ff9800;
+        }
+        .highlight-button:hover {
+            background-color: #e68900;
+        }
+        @keyframes confetti {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100vh); }
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff9800;
+            animation: confetti 4s linear infinite;
+        }
+        .confetti:nth-child(2n) { background-color: #10A37F; }
+        .confetti:nth-child(3n) { background-color: #565869; }
     </style>
 </head>
 <body>
@@ -81,7 +102,7 @@
         <button onclick="restart()">Iniciar otro cálculo</button>
         <div id="recommendation" class="hidden">
             <h2>Califica para contratar un agente de IA</h2>
-            <button onclick="notifySalesTeam()">Quiero cotizar mi agente</button>
+            <button class="highlight-button" onclick="notifySalesTeam()">Quiero cotizar mi agente</button>
         </div>
         <p id="notification" class="hidden">Ya hemos avisado al equipo comercial para que te contacte.</p>
     </div>
@@ -153,6 +174,7 @@
 
             if (dineroAhorrado > 0) {
                 document.getElementById('recommendation').classList.remove('hidden');
+                showConfetti();
             }
         }
 
@@ -171,6 +193,22 @@
             document.getElementById('whatsapp').value = '';
             document.getElementById('recommendation').classList.add('hidden');
             document.getElementById('notification').classList.add('hidden');
+            clearConfetti();
+        }
+
+        function showConfetti() {
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDelay = Math.random() * 4 + 's';
+                document.body.appendChild(confetti);
+            }
+        }
+
+        function clearConfetti() {
+            const confettis = document.querySelectorAll('.confetti');
+            confettis.forEach(confetti => confetti.remove());
         }
     </script>
 </body>
