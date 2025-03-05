@@ -1,112 +1,151 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Calculadora de Ahorro: IA vs Comercial</title>
+  <title>Calculadora de Ahorro: IA vs Comercial | Patagon AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Se incluye el CSS principal de Patagon AI para mantener la identidad visual -->
+  <link href="https://cdn.prod.website-files.com/66720261788977c9cce4348c/css/patagonai-2024.webflow.d4fdb0d7d.min.css" rel="stylesheet" type="text/css"/>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
+    /* Ajustes personalizados para la calculadora */
+    .calculator_container {
+      margin: 0 auto;
+      max-width: 800px;
     }
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-    input {
-      margin-top: 5px;
-      padding: 5px;
-      width: 300px;
-    }
-    .result {
-      margin-top: 20px;
+    .calculator_input {
+      width: 100%;
       padding: 10px;
-      border: 1px solid #ddd;
+      margin-top: 5px;
+      margin-bottom: 15px;
     }
-    button {
-      margin-top: 15px;
+    .calculator_button {
       padding: 10px 20px;
+      background-color: #4d65ff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .calculator_result {
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>Calculadora de Ahorro: IA vs Comercial</h1>
-  <form id="calcForm">
-    <label for="monthlySalary">Salario mensual del comercial (UYU):</label>
-    <input type="number" id="monthlySalary" value="80000" required>
-    
-    <label for="monthlyHours">Horas laborales mensuales (ej.: 160):</label>
-    <input type="number" id="monthlyHours" value="160" required>
-    
-    <label for="activeTime">Tiempo de interacción activa por contacto (minutos):</label>
-    <input type="number" id="activeTime" value="15" required>
-    
-    <label for="outHours">Horas fuera de servicio (cuando el comercial no califica) (horas):</label>
-    <input type="number" id="outHours" value="15" required>
-    
-    <label for="numContacts">Número de contactos mensuales:</label>
-    <input type="number" id="numContacts" value="100" required>
-    
-    <button type="button" onclick="calculateSavings()">Calcular</button>
-  </form>
-  
-  <div class="result" id="result"></div>
-  
+  <main class="main-wrapper max-width-full">
+    <section class="section_roi-calculator">
+      <div class="padding-global">
+        <div class="container-large">
+          <div class="padding-section-large">
+            <div class="margin-bottom margin-large">
+              <div class="text-align-center">
+                <div class="max-width-large align-center">
+                  <div class="margin-bottom margin-small">
+                    <h1 class="heading-style-h1">Calculadora de Ahorro: IA vs Comercial</h1>
+                  </div>
+                  <p class="text-size-medium text-color-secondary">
+                    Compara el tiempo y el costo de calificar un lead con un comercial versus un agente de IA.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="calculator_container">
+              <div class="caclulator_content is-roi">
+                <div class="calculator_title-container">
+                  <h2 class="text-color-secondary heading-style-h6">Ingresa tu información</h2>
+                </div>
+                <form id="calcForm">
+                  <div class="calculator_inputs">
+                    <div class="form_field-wrapper">
+                      <div>Salario mensual del comercial (UYU):</div>
+                      <input type="number" id="monthlySalary" class="calculator_input w-input" value="80000" required>
+                    </div>
+                    <div class="form_field-wrapper">
+                      <div>Horas laborales mensuales (ej.: 160):</div>
+                      <input type="number" id="monthlyHours" class="calculator_input w-input" value="160" required>
+                    </div>
+                    <div class="form_field-wrapper">
+                      <div>Tiempo de interacción activa por contacto (minutos):</div>
+                      <input type="number" id="activeTime" class="calculator_input w-input" value="15" required>
+                    </div>
+                    <div class="form_field-wrapper">
+                      <div>Horas fuera de servicio (cuando el comercial no califica):</div>
+                      <input type="number" id="outHours" class="calculator_input w-input" value="15" required>
+                    </div>
+                    <div class="form_field-wrapper">
+                      <div>Número de contactos mensuales:</div>
+                      <input type="number" id="numContacts" class="calculator_input w-input" value="100" required>
+                    </div>
+                    <button type="button" class="calculator_button w-button" onclick="calculateSavings()">Calcular</button>
+                  </div>
+                </form>
+                <div class="calculator_result" id="result">
+                  <!-- Aquí se mostrarán los resultados -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
   <script>
     function calculateSavings() {
-      // Obtener los valores de los inputs
+      // Obtener valores ingresados
       var monthlySalary = parseFloat(document.getElementById("monthlySalary").value);
       var monthlyHours = parseFloat(document.getElementById("monthlyHours").value);
       var activeTime = parseFloat(document.getElementById("activeTime").value);
       var outHours = parseFloat(document.getElementById("outHours").value);
       var numContacts = parseFloat(document.getElementById("numContacts").value);
       
-      // Cálculo del salario por hora
+      // Calcular salario por hora
       var wagePerHour = monthlySalary / monthlyHours;
       
-      // Probabilidad de recibir un contacto fuera del horario laboral
+      // Probabilidad de que el contacto llegue fuera del horario (horas fuera / 24)
       var probOut = outHours / 24;
       
-      // Tiempo de espera promedio cuando el contacto llega fuera del horario (en minutos)
+      // Tiempo de espera promedio cuando llega fuera del horario (la mitad del periodo en minutos)
       var avgDelay = (outHours * 60) / 2;
       
-      // Tiempo total que se demora un humano en calificar el contacto:
+      // Tiempo total que se demora un humano en calificar un contacto:
       // Tiempo activo + (probabilidad de retraso * tiempo de espera promedio)
       var totalHumanTime = activeTime + (probOut * avgDelay);
       
-      // La IA trabaja 24/7, por lo que solo se considera el tiempo activo
+      // La IA opera 24/7, solo considera el tiempo activo
       var totalIATime = activeTime;
       
-      // Costo por contacto en función del tiempo invertido (convertimos a horas)
+      // Costo por contacto (convertir minutos a horas)
       var costHuman = (totalHumanTime / 60) * wagePerHour;
       var costIA = (totalIATime / 60) * wagePerHour;
       
-      // Ahorro en tiempo y costo por contacto
+      // Ahorro por contacto en tiempo y costo
       var timeSaved = totalHumanTime - totalIATime;
       var costSaved = costHuman - costIA;
       
-      // Cálculo total mensual
+      // Totales mensuales
       var totalHumanCostMonthly = costHuman * numContacts;
       var totalIACostMonthly = costIA * numContacts;
       var totalTimeHumanMonthly = totalHumanTime * numContacts;
       var totalTimeIAMonthly = totalIATime * numContacts;
       
-      // Mostrar resultados en pantalla
+      // Mostrar resultados usando la estructura de Webflow
       var resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = "<h2>Resultados</h2>" +
-        "<p><strong>Tiempo total de calificación por contacto (humano):</strong> " + totalHumanTime.toFixed(2) + " minutos</p>" +
-        "<p><strong>Tiempo total de calificación por contacto (IA):</strong> " + totalIATime.toFixed(2) + " minutos</p>" +
-        "<p><strong>Costo por contacto (humano):</strong> " + costHuman.toFixed(2) + " UYU</p>" +
-        "<p><strong>Costo por contacto (IA):</strong> " + costIA.toFixed(2) + " UYU</p>" +
-        "<hr>" +
-        "<p><strong>Total de contactos mensuales:</strong> " + numContacts + "</p>" +
-        "<p><strong>Costo total mensual (humano):</strong> " + totalHumanCostMonthly.toFixed(2) + " UYU</p>" +
-        "<p><strong>Costo total mensual (IA):</strong> " + totalIACostMonthly.toFixed(2) + " UYU</p>" +
-        "<p><strong>Tiempo total mensual de calificación (humano):</strong> " + totalTimeHumanMonthly.toFixed(2) + " minutos</p>" +
-        "<p><strong>Tiempo total mensual de calificación (IA):</strong> " + totalTimeIAMonthly.toFixed(2) + " minutos</p>" +
-        "<hr>" +
-        "<p><strong>Tiempo ahorrado por contacto:</strong> " + timeSaved.toFixed(2) + " minutos</p>" +
-        "<p><strong>Ahorro en costo por contacto:</strong> " + costSaved.toFixed(2) + " UYU</p>" +
-        "<p><strong>Ahorro total en costo mensual:</strong> " + (costSaved * numContacts).toFixed(2) + " UYU</p>";
+      resultDiv.innerHTML = `
+        <h2 class="heading-style-h6 text-color-secondary">Resultados</h2>
+        <p><strong>Tiempo total por contacto (humano):</strong> ${totalHumanTime.toFixed(2)} minutos</p>
+        <p><strong>Tiempo total por contacto (IA):</strong> ${totalIATime.toFixed(2)} minutos</p>
+        <p><strong>Costo por contacto (humano):</strong> ${costHuman.toFixed(2)} UYU</p>
+        <p><strong>Costo por contacto (IA):</strong> ${costIA.toFixed(2)} UYU</p>
+        <hr>
+        <p><strong>Costo total mensual (humano):</strong> ${totalHumanCostMonthly.toFixed(2)} UYU</p>
+        <p><strong>Costo total mensual (IA):</strong> ${totalIACostMonthly.toFixed(2)} UYU</p>
+        <hr>
+        <p><strong>Tiempo ahorrado por contacto:</strong> ${timeSaved.toFixed(2)} minutos</p>
+        <p><strong>Ahorro en costo por contacto:</strong> ${costSaved.toFixed(2)} UYU</p>
+        <p><strong>Ahorro total mensual:</strong> ${(costSaved * numContacts).toFixed(2)} UYU</p>
+      `;
     }
   </script>
 </body>
