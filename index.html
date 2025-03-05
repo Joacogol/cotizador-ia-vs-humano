@@ -158,6 +158,29 @@
   </div>
 
   <script>
+    // Registrar un plugin de Chart.js para superponer el logo de SHOCK en la barra del Agente de IA
+    Chart.register({
+      id: 'centerLogoPlugin',
+      afterDatasetsDraw(chart, args, pluginOptions) {
+        const ctx = chart.ctx;
+        const meta = chart.getDatasetMeta(0);
+        if (meta.data.length > 1) {
+          // Suponemos que el índice 1 es la barra del Agente de IA
+          const iaBar = meta.data[1];
+          // Para barras verticales: iaBar.x es el centro horizontal,
+          // y la parte superior de la barra es iaBar.y, mientras que iaBar.base es el final (base)
+          const centerX = iaBar.x;
+          const centerY = (iaBar.y + iaBar.base) / 2;
+          const logo = pluginOptions.logo;
+          const logoWidth = pluginOptions.logoWidth || 40;
+          const logoHeight = pluginOptions.logoHeight || 40;
+          if (logo) {
+            ctx.drawImage(logo, centerX - logoWidth / 2, centerY - logoHeight / 2, logoWidth, logoHeight);
+          }
+        }
+      }
+    });
+
     function calculateResults() {
       // Datos de entrada (en USD)
       var monthlySalary = parseFloat(document.getElementById("monthlySalary").value);
@@ -165,7 +188,7 @@
       var workingDays = parseFloat(document.getElementById("workingDays").value);
       var iaCost = parseFloat(document.getElementById("iaCost").value);
       
-      // Jornada laboral fija de 9 horas = 540 minutos
+      // Jornada laboral fija: 9 horas = 540 minutos
       var totalDailyMinutes = 540;
       // Cada contacto toma 15 min
       var qualificationMinutes = contactsPerDay * 15;
@@ -214,15 +237,14 @@
       `;
       document.getElementById("resultsSummary").innerHTML = summaryHTML;
       
-      // Mostrar resultados en pantalla nueva
+      // Mostrar la pantalla de resultados
       document.getElementById("calculatorScreen").classList.remove("active");
       document.getElementById("resultsScreen").classList.add("active");
       
-      // Crear gráfico usando Chart.js, donde la barra del agente de IA tendrá el logo de SHOCK como patrón
+      // Crear gráfico usando Chart.js
       var ctx = document.getElementById('resultsChart').getContext('2d');
       
-      // Función para dibujar el gráfico con el patrón para la IA
-      function drawChart(iaPattern) {
+      function drawChart(logo) {
         if(window.myChart instanceof Chart){
           window.myChart.destroy();
         }
@@ -234,8 +256,8 @@
               label: 'Costo por contacto (USD)',
               data: [humanCostPerContact, iaCostPerContact],
               backgroundColor: [
-                'rgba(0, 0, 0, 0.7)', // color sólido para el humano
-                iaPattern           // patrón con el logo para la IA
+                'rgba(0, 0, 0, 0.7)', // Color sólido para el agente humano
+                'rgba(0, 0, 0, 0.7)'  // Color para el agente de IA (se sobrepone el logo)
               ],
               borderColor: [
                 'rgba(0, 0, 0, 1)',
@@ -248,6 +270,9 @@
             scales: {
               y: {
                 beginAtZero: true,
+                ticks: {
+                  precision: 0 // para que sean enteros
+                },
                 title: {
                   display: true,
                   text: 'Costo (USD)'
@@ -257,29 +282,32 @@
             plugins: {
               legend: {
                 display: false
+              },
+              centerLogoPlugin: {
+                logo: logo,
+                logoWidth: 40,
+                logoHeight: 40
               }
             }
           }
         });
       }
       
-      // Cargar el logo de SHOCK y crear un patrón para la barra del agente de IA
+      // Cargar el logo de SHOCK y llamar a drawChart
       var img = new Image();
-      // Usamos el logo de Shock (puedes cambiar la URL si lo deseas)
+      // URL del logo de Shock (se puede ajustar si es necesario)
       img.src = "https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=296,fit=crop,q=95/dWxlQN2M8XIwW5wk/logo_encabezado-YX4PeyxqO9UGBLv0.png";
       img.onload = function() {
-        var pattern = ctx.createPattern(img, 'repeat');
-        drawChart(pattern);
+        drawChart(img);
       };
-      // Si la imagen ya está cargada
+      // En caso de que la imagen ya esté cargada
       if (img.complete) {
-        var pattern = ctx.createPattern(img, 'repeat');
-        drawChart(pattern);
+        drawChart(img);
       }
     }
     
     function goBack() {
-      // Vuelve al formulario y oculta los resultados
+      // Volver al formulario y ocultar los resultados
       document.getElementById("resultsScreen").classList.remove("active");
       document.getElementById("calculatorScreen").classList.add("active");
     }
