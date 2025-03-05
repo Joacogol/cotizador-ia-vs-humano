@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Calculadora de Ahorro: IA vs Comercial | Patagon AI</title>
+  <title>Calculadora de Costo por Contacto: IA vs Humano | Patagon AI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Se incluye el CSS principal de Patagon AI para mantener la identidad visual -->
   <link href="https://cdn.prod.website-files.com/66720261788977c9cce4348c/css/patagonai-2024.webflow.d4fdb0d7d.min.css" rel="stylesheet" type="text/css"/>
@@ -42,11 +42,10 @@
               <div class="text-align-center">
                 <div class="max-width-large align-center">
                   <div class="margin-bottom margin-small">
-                    <h1 class="heading-style-h1">Calculadora de Ahorro: IA vs Comercial</h1>
+                    <h1 class="heading-style-h1">Calculadora: Costo por Contacto</h1>
                   </div>
                   <p class="text-size-medium text-color-secondary">
-                    Aunque el salario del comercial es fijo, su costo “efectivo” varía según la cantidad de contactos atendidos.
-                    Compara el costo y el tiempo invertido en calificar un lead con un comercial versus un agente de IA.
+                    Compara cuánto le cuesta a tu empresa calificar un contacto con un agente humano versus un agente de IA.
                   </p>
                 </div>
               </div>
@@ -58,25 +57,31 @@
                 </div>
                 <form id="calcForm">
                   <div class="calculator_inputs">
+                    <!-- Datos del agente humano -->
                     <div class="form_field-wrapper">
-                      <div>Salario mensual del comercial (UYU):</div>
+                      <div>Salario mensual del agente humano (UYU):</div>
                       <input type="number" id="monthlySalary" class="calculator_input w-input" value="80000" required>
                     </div>
                     <div class="form_field-wrapper">
-                      <div>Horas laborales mensuales (ej.: 160):</div>
-                      <input type="number" id="monthlyHours" class="calculator_input w-input" value="160" required>
+                      <div>Horas laborales diarias (ej.: 9):</div>
+                      <input type="number" id="dailyHours" class="calculator_input w-input" value="9" required>
                     </div>
                     <div class="form_field-wrapper">
-                      <div>Tiempo de interacción activa por contacto (minutos):</div>
-                      <input type="number" id="activeTime" class="calculator_input w-input" value="15" required>
+                      <div>Tiempo diario dedicado a calificar (minutos):</div>
+                      <input type="number" id="qualifyTime" class="calculator_input w-input" value="90" required>
                     </div>
                     <div class="form_field-wrapper">
-                      <div>Horas fuera de servicio (cuando el comercial no califica):</div>
-                      <input type="number" id="outHours" class="calculator_input w-input" value="15" required>
+                      <div>Número de contactos calificados por día:</div>
+                      <input type="number" id="contactsPerDay" class="calculator_input w-input" value="10" required>
                     </div>
                     <div class="form_field-wrapper">
-                      <div>Número de contactos mensuales:</div>
-                      <input type="number" id="numContacts" class="calculator_input w-input" value="100" required>
+                      <div>Días laborables mensuales:</div>
+                      <input type="number" id="workingDays" class="calculator_input w-input" value="20" required>
+                    </div>
+                    <!-- Datos para el agente de IA -->
+                    <div class="form_field-wrapper">
+                      <div>Número de contactos mensuales calificados por la IA:</div>
+                      <input type="number" id="iaContacts" class="calculator_input w-input" value="200" required>
                     </div>
                     <button type="button" class="calculator_button w-button" onclick="calculateSavings()">Calcular</button>
                   </div>
@@ -94,57 +99,43 @@
 
   <script>
     function calculateSavings() {
-      // Obtener valores ingresados
+      // Datos del agente humano
       var monthlySalary = parseFloat(document.getElementById("monthlySalary").value);
-      var monthlyHours = parseFloat(document.getElementById("monthlyHours").value);
-      var activeTime = parseFloat(document.getElementById("activeTime").value);
-      var outHours = parseFloat(document.getElementById("outHours").value);
-      var numContacts = parseFloat(document.getElementById("numContacts").value);
+      var dailyHours = parseFloat(document.getElementById("dailyHours").value);
+      var qualifyTime = parseFloat(document.getElementById("qualifyTime").value); // en minutos
+      var contactsPerDay = parseFloat(document.getElementById("contactsPerDay").value);
+      var workingDays = parseFloat(document.getElementById("workingDays").value);
       
-      // Calcular costo por hora del comercial
-      var wagePerHour = monthlySalary / monthlyHours;
+      // Datos de la IA
+      var iaContacts = parseFloat(document.getElementById("iaContacts").value);
       
-      // Probabilidad de que el contacto llegue fuera del horario (horas fuera / 24)
-      var probOut = outHours / 24;
+      // Fracción del día que el agente dedica a calificar
+      var fraction = qualifyTime / (dailyHours * 60);
+      // Costo mensual destinado a calificar contactos (solo esa tarea)
+      var effectiveMonthlySalary = monthlySalary * fraction;
       
-      // Tiempo de espera promedio cuando el contacto llega fuera del horario (la mitad del período en minutos)
-      var avgDelay = (outHours * 60) / 2;
+      // Capacidad mensual del agente humano en calificación
+      var humanContacts = workingDays * contactsPerDay;
+      // Costo por contacto para el humano
+      var humanCostPerContact = effectiveMonthlySalary / humanContacts;
       
-      // Tiempo total invertido por contacto (en minutos): tiempo activo + demora promedio
-      var totalHumanTime = activeTime + (probOut * avgDelay);
-      
-      // Costo "efectivo" por contacto (convertir minutos a horas)
-      var costHumanPerContact = (totalHumanTime / 60) * wagePerHour;
-      
-      // Costo total mensual del comercial (variable según la cantidad de contactos que atiende)
-      var humanMonthlyCost = costHumanPerContact * numContacts;
-      
-      // Para el agente de IA, el costo es fijo: 15.000 UYU mensuales
+      // Para la IA, el costo mensual es fijo de 15.000 UYU
       var aiMonthlyCost = 15000;
-      var costIAPerContact = aiMonthlyCost / numContacts;
-      
-      // Ahorro en tiempo por contacto (la diferencia entre el tiempo total invertido por el comercial y el tiempo activo que tarda la IA)
-      var timeSaved = totalHumanTime - activeTime;
-      
-      // Ahorro total mensual en costo
-      var costSavingsMonthly = humanMonthlyCost - aiMonthlyCost;
+      var aiCostPerContact = aiMonthlyCost / iaContacts;
       
       // Mostrar resultados
       var resultDiv = document.getElementById("result");
       resultDiv.innerHTML = `
         <h2 class="heading-style-h6 text-color-secondary">Resultados</h2>
-        <p><strong>Tiempo invertido por contacto (comercial):</strong> ${totalHumanTime.toFixed(2)} minutos</p>
-        <p><strong>Tiempo invertido por contacto (IA):</strong> ${activeTime.toFixed(2)} minutos</p>
-        <p><strong>Ahorro en tiempo por contacto:</strong> ${timeSaved.toFixed(2)} minutos</p>
+        <p><strong>Agente Humano:</strong></p>
+        <p>Salario asignado a calificar contactos: ${effectiveMonthlySalary.toFixed(2)} UYU/mes</p>
+        <p>Número de contactos calificados mensualmente: ${humanContacts}</p>
+        <p>Costo por contacto (humano): ${humanCostPerContact.toFixed(2)} UYU</p>
         <hr>
-        <p><strong>Costo por contacto (comercial):</strong> ${costHumanPerContact.toFixed(2)} UYU</p>
-        <p><strong>Costo por contacto (IA):</strong> ${costIAPerContact.toFixed(2)} UYU</p>
-        <hr>
-        <p><strong>Costo total mensual (comercial):</strong> ${humanMonthlyCost.toFixed(2)} UYU</p>
-        <p><strong>Costo total mensual (IA):</strong> ${aiMonthlyCost.toFixed(2)} UYU</p>
-        <hr>
-        <p><strong>Ahorro mensual en costo:</strong> ${costSavingsMonthly.toFixed(2)} UYU</p>
-        <p><em>Nota: Mientras más contactos atienda el comercial, el costo por contacto se diluye; sin embargo, su costo total se calcula en función del volumen atendido.</em></p>
+        <p><strong>Agente de IA:</strong></p>
+        <p>Costo fijo mensual: ${aiMonthlyCost.toFixed(2)} UYU</p>
+        <p>Número de contactos calificados mensualmente (según ingreso): ${iaContacts}</p>
+        <p>Costo por contacto (IA): ${aiCostPerContact.toFixed(2)} UYU</p>
       `;
     }
   </script>
