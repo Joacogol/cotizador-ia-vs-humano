@@ -1,224 +1,215 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cotizador IA vs Humano</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            flex-direction: column;
-        }
-        .container {
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            position: relative;
-            z-index: 1;
-        }
-        h1, h2 {
-            color: #0056b3;
-            font-size: 1.5em;
-        }
-        input[type="number"], input[type="text"] {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 10px;
-            background-color: #0056b3;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #004494;
-        }
-        .hidden {
-            display: none;
-        }
-        .chart-container {
-            position: relative;
-            margin: 20px auto;
-            height: 300px;
-            width: 100%;
-        }
-        .highlight-button {
-            font-size: 18px;
-            font-weight: bold;
-            background-color: #ff9800;
-        }
-        .highlight-button:hover {
-            background-color: #e68900;
-        }
-        @keyframes confetti {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(100vh); opacity: 0; }
-        }
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background-color: #ff9800;
-            animation: confetti 4s linear infinite;
-            will-change: transform;
-        }
-        .confetti:nth-child(2n) { background-color: #0056b3; }
-        .confetti:nth-child(3n) { background-color: #333; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cotizador IA vs Humano</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin: 10px;
+    }
+    h1, h2 {
+      color: #0056b3;
+      font-size: 1.5em;
+    }
+    input[type="number"], input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 10px;
+      background-color: #0056b3;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #004494;
+    }
+    .hidden {
+      display: none;
+    }
+    .chart-container {
+      position: relative;
+      margin: 20px auto;
+      height: 300px;
+      width: 100%;
+    }
+    /* Semáforo */
+    .semaforo {
+      width: 50px;
+      height: 150px;
+      background-color: #e0e0e0;
+      border-radius: 25px;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .semaforo .light {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: red; /* color por defecto */
+    }
+    /* Responsive para móviles */
+    @media (max-width: 600px) {
+      .container {
+        width: 90%;
+        padding: 15px;
+        margin: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container" id="screen1">
-        <h1>Primeras Preguntas</h1>
-        <input type="number" id="leads" placeholder="¿Cuántos leads atienden tus agentes humanos por día?" required>
-        <input type="number" id="datos" placeholder="¿Cuántos datos debe completar el usuario antes de ser calificado?" required>
-        <button onclick="goToScreen2()">Continuar al cálculo</button>
+  <div class="container" id="screen1">
+    <h1>Primeras Preguntas</h1>
+    <input type="number" id="leads" placeholder="¿Cuántos leads atienden tus agentes humanos por día?" required>
+    <input type="number" id="datos" placeholder="¿Cuántos datos debe completar el usuario antes de ser calificado?" required>
+    <button onclick="goToScreen2()">Continuar al cálculo</button>
+  </div>
+  <div class="container hidden" id="screen2">
+    <h1>Registro Obligatorio</h1>
+    <input type="text" id="nombre" placeholder="Tu nombre" required>
+    <input type="text" id="whatsapp" placeholder="Tu WhatsApp" required>
+    <button onclick="goToScreen3()">Ver mi ahorro</button>
+  </div>
+  <div class="container hidden" id="screen3">
+    <h1>Resultados</h1>
+    <div class="chart-container">
+      <canvas id="ahorroChart"></canvas>
     </div>
-    <div class="container hidden" id="screen2">
-        <h1>Registro Obligatorio</h1>
-        <input type="text" id="nombre" placeholder="Tu nombre" required>
-        <input type="text" id="whatsapp" placeholder="Tu WhatsApp" required>
-        <button onclick="goToScreen3()">Ver mi ahorro</button>
+    <p id="ahorro"></p>
+    <!-- Contenedor para el semáforo -->
+    <div id="semaforoContainer" class="hidden">
+      <div class="semaforo">
+        <div class="light"></div>
+      </div>
+      <p id="semaforoText"></p>
     </div>
-    <div class="container hidden" id="screen3">
-        <h1>Resultados</h1>
-        <div class="chart-container">
-            <canvas id="ahorroChart"></canvas>
-        </div>
-        <p id="ahorro"></p>
-        <button onclick="restart()">Iniciar otro cálculo</button>
-        <div id="recommendation" class="hidden">
-            <h2>Califica para contratar un agente de IA</h2>
-            <button class="highlight-button" onclick="notifySalesTeam()">Quiero cotizar mi agente</button>
-        </div>
-        <p id="notification" class="hidden">Ya hemos avisado al equipo comercial para que te contacte.</p>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        function goToScreen2() {
-            document.getElementById('screen1').classList.add('hidden');
-            document.getElementById('screen2').classList.remove('hidden');
-        }
+    <button onclick="restart()">Iniciar otro cálculo</button>
+    <p id="notification" class="hidden">Ya hemos avisado al equipo comercial para que te contacte.</p>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    function goToScreen2() {
+      document.getElementById('screen1').classList.add('hidden');
+      document.getElementById('screen2').classList.remove('hidden');
+    }
 
-        function goToScreen3() {
-            const nombre = document.getElementById('nombre').value;
-            const whatsapp = document.getElementById('whatsapp').value;
-            if (nombre && whatsapp) {
-                document.getElementById('screen2').classList.add('hidden');
-                document.getElementById('screen3').classList.remove('hidden');
-                calculateSavings();
-            } else {
-                alert('Por favor, completa todos los campos.');
+    function goToScreen3() {
+      const nombre = document.getElementById('nombre').value;
+      const whatsapp = document.getElementById('whatsapp').value;
+      if (nombre && whatsapp) {
+        document.getElementById('screen2').classList.add('hidden');
+        document.getElementById('screen3').classList.remove('hidden');
+        calculateSavings();
+      } else {
+        alert('Por favor, completa todos los campos.');
+      }
+    }
+
+    function calculateSavings() {
+      const leads = parseFloat(document.getElementById('leads').value);
+      const datos = parseFloat(document.getElementById('datos').value);
+      let tiempoHumano, tiempoIA;
+
+      if (datos <= 5) {
+        tiempoHumano = 15;
+        tiempoIA = 2;
+      } else {
+        tiempoHumano = 35;
+        tiempoIA = 3;
+      }
+
+      const tiempoMensualHumano = (leads * tiempoHumano / 60) * 22;
+      const tiempoMensualIA = (leads * tiempoIA / 60) * 22;
+      const costoMensualHumano = (tiempoMensualHumano / 160) * 2000;
+      const costoMensualIA = 300;
+      const tiempoAhorrado = tiempoMensualHumano - tiempoMensualIA;
+      const dineroAhorrado = costoMensualHumano - costoMensualIA;
+
+      document.getElementById('ahorro').innerText = `Tiempo ahorrado: ${tiempoAhorrado.toFixed(2)} horas/mes\nDinero ahorrado: $${dineroAhorrado.toFixed(2)} USD/mes`;
+
+      const ctx = document.getElementById('ahorroChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Humano', 'IA'],
+          datasets: [{
+            label: 'Costo Mensual (USD)',
+            data: [costoMensualHumano, costoMensualIA],
+            backgroundColor: ['#333', '#0056b3']
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
             }
+          }
         }
+      });
 
-        function calculateSavings() {
-            const leads = document.getElementById('leads').value;
-            const datos = document.getElementById('datos').value;
-            let tiempoHumano, tiempoIA;
+      // Mostrar semáforo en lugar de confetti o papelitos
+      document.getElementById('semaforoContainer').classList.remove('hidden');
+      const light = document.querySelector('.semaforo .light');
+      const semaforoText = document.getElementById('semaforoText');
+      if (dineroAhorrado > 0) {
+        semaforoText.innerText = "Califica para contratar un agente de IA";
+        light.style.backgroundColor = 'green';
+      } else {
+        semaforoText.innerText = "No califica para agente de IA";
+        light.style.backgroundColor = 'red';
+      }
+    }
 
-            if (datos <= 5) {
-                tiempoHumano = 15;
-                tiempoIA = 2;
-            } else {
-                tiempoHumano = 35;
-                tiempoIA = 3;
-            }
+    function notifySalesTeam() {
+      // Si fuera necesario notificar al equipo de ventas
+      document.getElementById('notification').classList.remove('hidden');
+    }
 
-            const tiempoMensualHumano = (leads * tiempoHumano / 60) * 22;
-            const tiempoMensualIA = (leads * tiempoIA / 60) * 22;
-            const costoMensualHumano = (tiempoMensualHumano / 160) * 2000;
-            const costoMensualIA = 300;
-            const tiempoAhorrado = tiempoMensualHumano - tiempoMensualIA;
-            const dineroAhorrado = costoMensualHumano - costoMensualIA;
-
-            document.getElementById('ahorro').innerText = `Tiempo ahorrado: ${tiempoAhorrado.toFixed(2)} horas/mes\nDinero ahorrado: $${dineroAhorrado.toFixed(2)} USD/mes`;
-
-            const ctx = document.getElementById('ahorroChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Humano', 'IA'],
-                    datasets: [{
-                        label: 'Costo Mensual (USD)',
-                        data: [costoMensualHumano, costoMensualIA],
-                        backgroundColor: ['#333', '#0056b3']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            if (leads > 1000) {
-                alert('¡Impactante ahorro! Has ingresado un número muy alto de leads.');
-            }
-
-            if (dineroAhorrado > 0) {
-                document.getElementById('recommendation').classList.remove('hidden');
-                showConfetti();
-            }
-        }
-
-        function notifySalesTeam() {
-            document.getElementById('recommendation').classList.add('hidden');
-            document.getElementById('notification').classList.remove('hidden');
-        }
-
-        function restart() {
-            document.getElementById('screen1').classList.remove('hidden');
-            document.getElementById('screen2').classList.add('hidden');
-            document.getElementById('screen3').classList.add('hidden');
-            document.getElementById('leads').value = '';
-            document.getElementById('datos').value = '';
-            document.getElementById('nombre').value = '';
-            document.getElementById('whatsapp').value = '';
-            document.getElementById('recommendation').classList.add('hidden');
-            document.getElementById('notification').classList.add('hidden');
-            clearConfetti();
-        }
-
-        function showConfetti() {
-            for (let i = 0; i < 100; i++) {
-                const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.animationDelay = Math.random() * 4 + 's';
-                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-                document.body.appendChild(confetti);
-            }
-        }
-
-        function clearConfetti() {
-            const confettis = document.querySelectorAll('.confetti');
-            confettis.forEach(confetti => confetti.remove());
-        }
-    </script>
+    function restart() {
+      document.getElementById('screen1').classList.remove('hidden');
+      document.getElementById('screen2').classList.add('hidden');
+      document.getElementById('screen3').classList.add('hidden');
+      document.getElementById('leads').value = '';
+      document.getElementById('datos').value = '';
+      document.getElementById('nombre').value = '';
+      document.getElementById('whatsapp').value = '';
+      document.getElementById('semaforoContainer').classList.add('hidden');
+      document.getElementById('notification').classList.add('hidden');
+    }
+  </script>
 </body>
 </html>
+
