@@ -1,6 +1,3 @@
-Aquí te dejo un ejemplo de código en HTML y JavaScript que puedes incrustar en tu página web para que tus potenciales clientes realicen la comparación. Este cotizador permite ingresar los datos básicos y, al hacer clic en "Calcular", muestra el número de SQL (Sales Qualified Leads) generados por un agente humano versus uno de IA, junto con el costo por SQL y la diferencia de resultados.
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -101,16 +98,3 @@ Aquí te dejo un ejemplo de código en HTML y JavaScript que puedes incrustar en
   </script>
 </body>
 </html>
-```
-
-### Cómo funciona el código:
-- **Entrada de datos:** El usuario ingresa la cantidad de leads mensuales, la tasa de conversión actual (en porcentaje), el costo mensual del agente humano, el costo del agente de IA y el factor de mejora en la conversión (por ejemplo, 1.5 o 5).
-- **Cálculos:**  
-  - Se calcula la cantidad de SQL generados con un agente humano usando:  
-    `SQL_humano = leads * (tasa de conversión / 100)`  
-  - Se calcula la cantidad de SQL generados con IA aplicando el factor de mejora:  
-    `SQL_IA = SQL_humano * factor de mejora`
-  - Se determina el costo por SQL en cada caso dividiendo el costo mensual entre la cantidad de SQL generados.
-- **Visualización:** Los resultados se muestran en una sección de la página, facilitando la comparación.
-
-Puedes personalizar el estilo y ampliar la funcionalidad según tus necesidades. ¡Espero que te resulte útil para tu sitio web!
