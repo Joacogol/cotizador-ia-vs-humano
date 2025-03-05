@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Calculadora: Costo por Contacto (IA vs Humano) | Patagon AI</title>
+  <title>Calculadora: ¿Agente Humano o IA? | Patagon AI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- CSS principal de Patagon AI para mantener la identidad visual -->
+  <!-- Se mantiene el estilo de Patagon AI -->
   <link href="https://cdn.prod.website-files.com/66720261788977c9cce4348c/css/patagonai-2024.webflow.d4fdb0d7d.min.css" rel="stylesheet" type="text/css"/>
   <style>
     /* Ajustes personalizados para la calculadora */
@@ -31,7 +31,7 @@
       padding-top: 20px;
       margin-top: 20px;
     }
-    /* Ocultar pantalla de resultados por defecto */
+    /* Por defecto se muestra la pantalla de formulario y se oculta la de resultados */
     #resultScreen {
       display: none;
     }
@@ -49,10 +49,10 @@
                 <div class="text-align-center">
                   <div class="max-width-large align-center">
                     <div class="margin-bottom margin-small">
-                      <h1 class="heading-style-h1">Calculadora: Costo por Contacto</h1>
+                      <h1 class="heading-style-h1">Calculadora: ¿Agente Humano o IA?</h1>
                     </div>
                     <p class="text-size-medium text-color-secondary">
-                      Conoce cuánto le cuesta a tu empresa calificar un contacto utilizando agentes humanos versus agentes de IA.
+                      Descubre cuál opción te conviene más en función del costo por contacto.
                     </p>
                   </div>
                 </div>
@@ -63,37 +63,18 @@
                     <h2 class="text-color-secondary heading-style-h6">Ingresa tu información</h2>
                   </div>
                   <form id="calcForm">
-                    <!-- Número de agentes (se asume igual para ambas opciones) -->
-                    <div class="form_field-wrapper">
-                      <div>Número de agentes (humanos y IA):</div>
-                      <input type="number" id="numAgents" class="calculator_input w-input" value="1" required>
-                    </div>
-                    <!-- Cantidad de contactos mensuales -->
-                    <div class="form_field-wrapper">
-                      <div>Cantidad de contactos mensuales (total que llegan):</div>
-                      <input type="number" id="totalContacts" class="calculator_input w-input" value="200" required>
-                    </div>
-                    <!-- Datos fijos del agente humano -->
+                    <!-- Ingreso de sueldo (valor pre cargado) -->
                     <div class="form_field-wrapper">
                       <div>Salario mensual del agente humano (UYU):</div>
                       <input type="number" id="monthlySalary" class="calculator_input w-input" value="80000" required>
                     </div>
+                    <!-- Ingreso de contactos calificados por día -->
                     <div class="form_field-wrapper">
-                      <div>Horas laborales diarias (ej.: 9, de 9 a 18 hs):</div>
-                      <input type="number" id="dailyHours" class="calculator_input w-input" value="9" required>
+                      <div>Contactos calificados por día (por el agente humano):</div>
+                      <input type="number" id="contactsPerDay" class="calculator_input w-input" value="6" required>
+                      <p class="text-size-small">Nota: Se estima que 1,5 horas de calificación (90 min) permiten calificar 6 contactos (15 min cada uno).</p>
                     </div>
-                    <div class="form_field-wrapper">
-                      <div>Tiempo diario dedicado a calificar (minutos):</div>
-                      <input type="number" id="qualifyTime" class="calculator_input w-input" value="90" required>
-                    </div>
-                    <div class="form_field-wrapper">
-                      <div>Contactos calificados por agente por día:</div>
-                      <input type="number" id="contactsPerDay" class="calculator_input w-input" value="10" required>
-                    </div>
-                    <div class="form_field-wrapper">
-                      <div>Días laborables mensuales:</div>
-                      <input type="number" id="workingDays" class="calculator_input w-input" value="20" required>
-                    </div>
+                    <!-- Se asumen 20 días laborales al mes -->
                     <button type="button" class="calculator_button w-button" onclick="calculateSavings()">Calcular</button>
                   </form>
                 </div>
@@ -133,98 +114,84 @@
   <script>
     function calculateSavings() {
       // Datos de entrada
-      var numAgents = parseFloat(document.getElementById("numAgents").value);
-      var totalContacts = parseFloat(document.getElementById("totalContacts").value);
       var monthlySalary = parseFloat(document.getElementById("monthlySalary").value);
-      var dailyHours = parseFloat(document.getElementById("dailyHours").value);
-      var qualifyTime = parseFloat(document.getElementById("qualifyTime").value); // en minutos
       var contactsPerDay = parseFloat(document.getElementById("contactsPerDay").value);
-      var workingDays = parseFloat(document.getElementById("workingDays").value);
       
-      // Capacidad máxima de calificación por agente (humanos)
-      var capacityPerAgent = workingDays * contactsPerDay;  // e.g. 20 * 10 = 200
-      var totalCapacity = numAgents * capacityPerAgent;
-      
-      // Se procesan la cantidad de contactos que llegan o la capacidad máxima, lo que sea menor.
-      var processedContacts = Math.min(totalContacts, totalCapacity);
+      // Datos fijos:
+      var workHoursPerDay = 9;         // Jornada de 9 horas (09:00-18:00)
+      var qualifyTimePerDay = 1.5;       // 1,5 horas diarias para calificar
+      var timePerContact = 15;           // 15 minutos por contacto (dato para el humano)
+      var workingDays = 20;              // Días laborales al mes
+      var iaMonthlyCost = 15000;         // Costo fijo mensual del agente de IA
       
       // Cálculos para el agente humano:
-      // La fracción del salario dedicada a calificar es: 90 minutos / (9 horas * 60) = 90/540 = 1/6
-      var fraction = qualifyTime / (dailyHours * 60);
-      // Costo mensual destinado a calificar por agente:
-      var effectiveSalary = monthlySalary * fraction;
-      // Costo total mensual para todos los agentes humanos:
-      var totalHumanCost = numAgents * effectiveSalary;
-      // Costo por contacto para el humano:
-      var humanCostPerContact = totalHumanCost / processedContacts;
+      // El costo asignado a la calificación es la fracción del salario dedicada a esa tarea.
+      var fraction = qualifyTimePerDay / workHoursPerDay;  // 1.5 / 9
+      var effectiveSalary = monthlySalary * fraction;      // Ej. 80000 * (1.5/9)
+      
+      // Se supone que el agente califica los contactos que se ingresen por día (valor variable)
+      var monthlyContacts = contactsPerDay * workingDays;
+      
+      // Costo por contacto para el agente humano
+      var humanCostPerContact = effectiveSalary / monthlyContacts;
       
       // Cálculos para el agente de IA:
-      // Costo fijo mensual por agente de IA es 15.000 UYU
-      var iaCostPerAgent = 15000;
-      var totalIACost = numAgents * iaCostPerAgent;
-      var iaCostPerContact = totalIACost / processedContacts;
+      var iaCostPerContact = iaMonthlyCost / monthlyContacts;
       
-      // Resumen comparativo
+      // Comparativa y resumen:
       var summary = "";
       if (humanCostPerContact < iaCostPerContact) {
-        summary = "En función del costo por contacto, resulta más económico utilizar agentes humanos (" 
-          + humanCostPerContact.toFixed(2) + " UYU por contacto) que agentes de IA (" 
-          + iaCostPerContact.toFixed(2) + " UYU por contacto).";
+        summary = "El agente humano es más económico, ya que su costo por contacto es de " +
+                  humanCostPerContact.toFixed(2) + " UYU, en comparación con " +
+                  iaCostPerContact.toFixed(2) + " UYU por contacto de la IA.";
       } else if (humanCostPerContact > iaCostPerContact) {
-        summary = "En función del costo por contacto, resulta más económico utilizar agentes de IA (" 
-          + iaCostPerContact.toFixed(2) + " UYU por contacto) que agentes humanos (" 
-          + humanCostPerContact.toFixed(2) + " UYU por contacto).";
+        summary = "El agente de IA resulta más económico, con un costo por contacto de " +
+                  iaCostPerContact.toFixed(2) + " UYU, frente a " +
+                  humanCostPerContact.toFixed(2) + " UYU del agente humano.";
       } else {
-        summary = "Ambas opciones presentan el mismo costo por contacto (" + humanCostPerContact.toFixed(2) + " UYU).";
+        summary = "Ambas opciones tienen el mismo costo por contacto (" + humanCostPerContact.toFixed(2) + " UYU).";
       }
       
-      // Nota sobre disponibilidad: la IA opera 24/7, lo que puede mejorar tiempos de respuesta y continuidad.
-      summary += " Además, la IA opera 24/7 y responde de forma casi instantánea, lo que podría generar ventajas adicionales en rapidez y conversión.";
+      // Se añade que, además, la IA opera 24/7 y responde de forma casi instantánea.
+      summary += " Además, la IA opera 24/7 y califica contactos casi instantáneamente, lo que puede generar ventajas en rapidez y continuidad.";
       
-      // Mostrar resultados en la pantalla de resultados
+      // Mostrar resultados
       var resultDiv = document.getElementById("result");
       resultDiv.innerHTML = `
         <h2 class="heading-style-h6 text-color-secondary">Resultados</h2>
-        <p><strong>Agentes Humanos:</strong></p>
-        <p>Salario asignado a calificar por agente: ${effectiveSalary.toFixed(2)} UYU/mes</p>
-        <p>Capacidad máxima de calificación (por agente): ${capacityPerAgent} contactos</p>
-        <p>Capacidad total de los agentes: ${totalCapacity} contactos</p>
-        <p>Contactos procesados (mínimo entre contactos mensuales y capacidad): ${processedContacts}</p>
-        <p>Costo total mensual (humanos): ${totalHumanCost.toFixed(2)} UYU</p>
-        <p>Costo por contacto (humanos): ${humanCostPerContact.toFixed(2)} UYU</p>
+        <p><strong>Agente Humano:</strong></p>
+        <p>Salario mensual: ${monthlySalary.toFixed(2)} UYU</p>
+        <p>Tiempo dedicado a calificar: ${qualifyTimePerDay} horas diarias</p>
+        <p>Salario asignado a calificar (efectivo): ${effectiveSalary.toFixed(2)} UYU/mes</p>
+        <p>Contactos calificados por día: ${contactsPerDay}</p>
+        <p>Contactos mensuales (20 días): ${monthlyContacts}</p>
+        <p>Costo por contacto (humano): ${humanCostPerContact.toFixed(2)} UYU</p>
         <hr>
-        <p><strong>Agentes de IA:</strong></p>
-        <p>Costo fijo por agente: ${iaCostPerAgent.toFixed(2)} UYU/mes</p>
-        <p>Costo total mensual (IA): ${totalIACost.toFixed(2)} UYU</p>
+        <p><strong>Agente de IA:</strong></p>
+        <p>Costo fijo mensual: ${iaMonthlyCost.toFixed(2)} UYU</p>
+        <p>Asumiendo la misma capacidad de ${monthlyContacts} contactos mensuales,</p>
         <p>Costo por contacto (IA): ${iaCostPerContact.toFixed(2)} UYU</p>
         <hr>
-        <p><strong>Resumen:</strong></p>
-        <p>${summary}</p>
+        <p><strong>Resumen:</strong> ${summary}</p>
       `;
       
-      // Ocultar pantalla de formulario y mostrar resultados
+      // Mostrar la pantalla de resultados y ocultar la de formulario
       document.getElementById("formScreen").style.display = "none";
       document.getElementById("resultScreen").style.display = "block";
     }
     
-    // Función para volver a la pantalla de resultados (sin resetear los valores)
+    // Función para volver a la pantalla de formulario sin resetear los datos
     function goBack() {
       document.getElementById("resultScreen").style.display = "none";
       document.getElementById("formScreen").style.display = "block";
     }
     
-    // Función para reiniciar la calculadora (restablece los valores por defecto)
+    // Función para reiniciar la calculadora a los valores por defecto
     function resetCalculator() {
       document.getElementById("calcForm").reset();
-      // Opcional: se pueden establecer nuevamente los valores por defecto
-      document.getElementById("numAgents").value = "1";
-      document.getElementById("totalContacts").value = "200";
+      // Restablecemos los valores pre cargados
       document.getElementById("monthlySalary").value = "80000";
-      document.getElementById("dailyHours").value = "9";
-      document.getElementById("qualifyTime").value = "90";
-      document.getElementById("contactsPerDay").value = "10";
-      document.getElementById("workingDays").value = "20";
-      
+      document.getElementById("contactsPerDay").value = "6";
       document.getElementById("resultScreen").style.display = "none";
       document.getElementById("formScreen").style.display = "block";
     }
