@@ -1,315 +1,116 @@
+Aquí te dejo un ejemplo de código en HTML y JavaScript que puedes incrustar en tu página web para que tus potenciales clientes realicen la comparación. Este cotizador permite ingresar los datos básicos y, al hacer clic en "Calcular", muestra el número de SQL (Sales Qualified Leads) generados por un agente humano versus uno de IA, junto con el costo por SQL y la diferencia de resultados.
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <!-- Meta para responsive en móviles -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cotizador IA vs Humano</title>
+  <meta charset="UTF-8">
+  <title>Cotizador: Agente de IA vs. Humano</title>
   <style>
-    /* Estilos base */
     body {
       font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-      color: #333;
-      margin: 0;
-      padding: 0;
+      margin: 20px;
     }
-
-    /* Contenedor principal de cada pantalla */
     .container {
-      max-width: 400px;
-      width: 90%;
-      margin: 5px auto; /* Menos margen vertical */
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-      padding: 10px; /* Menos padding */
-      box-sizing: border-box;
+      max-width: 600px;
+      margin: auto;
     }
-
-    h1, h2 {
-      color: #0056b3;
-      font-size: 1.2em; /* Un poco más pequeño */
-      margin: 0;       /* Sin margen superior */
-      margin-bottom: 0.4em;
-    }
-
-    p {
-      margin: 0.3em 0;   /* Reducir espacio vertical en párrafos */
-      line-height: 1.2em;
-    }
-
     label {
       display: block;
-      margin-top: 0.6em;
-      margin-bottom: 0.2em;
-      font-weight: bold;
-      font-size: 0.95em;
+      margin-top: 10px;
     }
-
-    input[type="number"],
-    input[type="text"] {
+    input {
+      padding: 5px;
+      margin-top: 5px;
       width: 100%;
-      padding: 8px;
-      margin: 0; /* Sin margen extra */
-      border: 1px solid #ccc;
-      border-radius: 5px;
       box-sizing: border-box;
-      font-size: 15px;
     }
-
     button {
-      width: 100%;
-      padding: 10px; /* Menos padding vertical */
-      margin-top: 8px;
-      background-color: #0056b3;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 15px;
-      transition: background-color 0.3s;
+      margin-top: 20px;
+      padding: 10px 20px;
     }
-
-    button:hover {
-      background-color: #004494;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    /* Contenedor del gráfico */
-    .chart-container {
-      position: relative;
-      margin: 5px auto; /* Reducir margen */
-      height: 230px;    /* Reducir altura */
-      width: 100%;
-    }
-
-    /* Estilos del semáforo */
-    .semaforo {
-      width: 50px;
-      background-color: #ccc;
-      border-radius: 25px;
-      margin: 10px auto;
-      display: flex;
-      flex-direction: column; /* rojo arriba, amarillo medio, verde abajo */
-      align-items: center;
-      justify-content: space-around;
-      padding: 8px 0;
-      gap: 5px; /* Espacio entre luces */
-    }
-
-    .light {
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
-      background-color: #999; /* “Apagado” por defecto */
-    }
-
-    /* Clases para encender cada luz */
-    .active-red {
-      background-color: red;
-    }
-    .active-yellow {
-      background-color: yellow;
-    }
-    .active-green {
-      background-color: green;
-    }
-
-    /* Animación de parpadeo (blink) */
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.2; }
-    }
-    .blinking {
-      animation: blink 1s infinite;
-    }
-
-    /* Responsivo extra si deseas */
-    @media (max-width: 600px) {
-      h1, h2 {
-        font-size: 1.1em;
-      }
-      label {
-        font-size: 0.9em;
-      }
-      button {
-        font-size: 14px;
-      }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f2f2f2;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
-  <!-- Pantalla 1 -->
-  <div class="container" id="screen1">
-    <h1>Primeras Preguntas</h1>
-    <label for="leads">¿Cuántos leads atienden tus agentes humanos por día?</label>
-    <input type="number" id="leads" required />
+  <div class="container">
+    <h2>Cotizador: Agente de IA vs. Humano</h2>
 
-    <label for="datos">¿Cuántos datos debe completar el usuario antes de ser calificado?</label>
-    <input type="number" id="datos" required />
+    <label for="leads">Cantidad de leads mensuales:</label>
+    <input type="number" id="leads" placeholder="Ej. 1000" />
 
-    <button onclick="goToScreen2()">Continuar al cálculo</button>
+    <label for="conversionRate">Tasa de conversión actual de Contacto a SQL (en %):</label>
+    <input type="number" id="conversionRate" placeholder="Ej. 30" />
+
+    <label for="humanCost">Costo mensual del agente humano (en $):</label>
+    <input type="number" id="humanCost" placeholder="Ej. 2000" />
+
+    <label for="aiCost">Costo mensual del agente de IA (en $):</label>
+    <input type="number" id="aiCost" placeholder="Ej. 1000" />
+
+    <label for="improvementFactor">
+      Factor de mejora en conversión con IA (por ejemplo, 1.5 para un aumento del 50% o 5 para un aumento del 400%):
+    </label>
+    <input type="number" step="0.1" id="improvementFactor" placeholder="Ej. 1.5" />
+
+    <button onclick="calcularCotizacion()">Calcular</button>
+
+    <div class="result" id="result"></div>
   </div>
-
-  <!-- Pantalla 2 -->
-  <div class="container hidden" id="screen2">
-    <h1>Registro Obligatorio</h1>
-    <label for="nombre">Tu nombre</label>
-    <input type="text" id="nombre" required />
-
-    <label for="whatsapp">Tu WhatsApp</label>
-    <input type="text" id="whatsapp" required />
-
-    <button onclick="goToScreen3()">Ver mi ahorro</button>
-  </div>
-
-  <!-- Pantalla 3 -->
-  <div class="container hidden" id="screen3">
-    <h1>Resultados</h1>
-    <div class="chart-container">
-      <canvas id="ahorroChart"></canvas>
-    </div>
-    <p id="ahorro"></p>
-
-    <!-- Semáforo con 3 luces: rojo, amarillo, verde -->
-    <div id="semaforoContainer" class="hidden">
-      <div class="semaforo">
-        <div id="redLight" class="light"></div>
-        <div id="yellowLight" class="light"></div>
-        <div id="greenLight" class="light"></div>
-      </div>
-      <p id="semaforoText"></p>
-    </div>
-
-    <button onclick="restart()">Iniciar otro cálculo</button>
-    <p id="notification" class="hidden">
-      Ya hemos avisado al equipo comercial para que te contacte.
-    </p>
-  </div>
-
-  <!-- Librería Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
-    function goToScreen2() {
-      document.getElementById('screen1').classList.add('hidden');
-      document.getElementById('screen2').classList.remove('hidden');
-    }
+    function calcularCotizacion() {
+      // Obtener los valores de entrada y convertir la tasa a decimal
+      var leads = parseFloat(document.getElementById('leads').value);
+      var conversionRate = parseFloat(document.getElementById('conversionRate').value) / 100;
+      var humanCost = parseFloat(document.getElementById('humanCost').value);
+      var aiCost = parseFloat(document.getElementById('aiCost').value);
+      var improvementFactor = parseFloat(document.getElementById('improvementFactor').value);
 
-    function goToScreen3() {
-      const nombre = document.getElementById('nombre').value;
-      const whatsapp = document.getElementById('whatsapp').value;
-      if (nombre && whatsapp) {
-        document.getElementById('screen2').classList.add('hidden');
-        document.getElementById('screen3').classList.remove('hidden');
-        calculateSavings();
-      } else {
-        alert('Por favor, completa todos los campos.');
-      }
-    }
-
-    function calculateSavings() {
-      const leads = parseFloat(document.getElementById('leads').value);
-      const datos = parseFloat(document.getElementById('datos').value);
-
-      let tiempoHumano, tiempoIA;
-
-      // Lógica sencilla para asignar tiempos
-      if (datos <= 5) {
-        tiempoHumano = 15;  // minutos
-        tiempoIA = 2;       // minutos
-      } else {
-        tiempoHumano = 35;  // minutos
-        tiempoIA = 3;       // minutos
+      // Validar que se hayan ingresado todos los valores
+      if (isNaN(leads) || isNaN(conversionRate) || isNaN(humanCost) || isNaN(aiCost) || isNaN(improvementFactor)) {
+        alert("Por favor, complete todos los campos con valores numéricos válidos.");
+        return;
       }
 
-      // Cálculos
-      const tiempoMensualHumano = (leads * tiempoHumano / 60) * 22; // 22 días/mes
-      const tiempoMensualIA = (leads * tiempoIA / 60) * 22;
-      const costoMensualHumano = (tiempoMensualHumano / 160) * 2000; // 160 horas y 2000 USD/mes
-      const costoMensualIA = 300; // costo fijo
-      const tiempoAhorrado = tiempoMensualHumano - tiempoMensualIA;
-      const dineroAhorrado = costoMensualHumano - costoMensualIA;
+      // Cálculo de SQL (Sales Qualified Leads)
+      var sqlHumano = leads * conversionRate;
+      var sqlIA = leads * conversionRate * improvementFactor;
 
-      // Mostramos resultado
-      document.getElementById('ahorro').innerText =
-        `Tiempo ahorrado: ${tiempoAhorrado.toFixed(2)} horas/mes\n` +
-        `Dinero ahorrado: $${dineroAhorrado.toFixed(2)} USD/mes`;
+      // Evitar división por cero
+      var costoPorSQLHumano = sqlHumano > 0 ? humanCost / sqlHumano : 0;
+      var costoPorSQLIA = sqlIA > 0 ? aiCost / sqlIA : 0;
 
-      // Render del gráfico
-      const ctx = document.getElementById('ahorroChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Humano', 'IA'],
-          datasets: [{
-            label: 'Costo Mensual (USD)',
-            data: [costoMensualHumano, costoMensualIA],
-            backgroundColor: ['#333', '#0056b3']
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: { beginAtZero: true }
-          }
-        }
-      });
+      // Diferencia en la cantidad de SQL
+      var diferenciaSQL = sqlIA - sqlHumano;
 
-      // Mostrar semáforo
-      document.getElementById('semaforoContainer').classList.remove('hidden');
-
-      // Apagamos las 3 luces
-      const redLight = document.getElementById('redLight');
-      const yellowLight = document.getElementById('yellowLight');
-      const greenLight = document.getElementById('greenLight');
-      const semaforoText = document.getElementById('semaforoText');
-
-      redLight.className = 'light';
-      yellowLight.className = 'light';
-      greenLight.className = 'light';
-
-      // Decidir qué luz parpadea
-      if (dineroAhorrado > 0) {
-        // Califica: parpadea la verde
-        semaforoText.innerText = "Califica para contratar un agente de IA";
-        greenLight.classList.add('active-green', 'blinking');
-      } else {
-        // No califica: parpadea la roja
-        semaforoText.innerText = "No califica para agente de IA";
-        redLight.classList.add('active-red', 'blinking');
-      }
-
-      // Alerta si leads es muy alto
-      if (leads > 1000) {
-        alert('¡Impactante ahorro! Has ingresado un número muy alto de leads.');
-      }
-    }
-
-    // Notificar a equipo comercial (opcional)
-    function notifySalesTeam() {
-      document.getElementById('notification').classList.remove('hidden');
-    }
-
-    function restart() {
-      // Reseteamos la UI
-      document.getElementById('screen1').classList.remove('hidden');
-      document.getElementById('screen2').classList.add('hidden');
-      document.getElementById('screen3').classList.add('hidden');
-
-      document.getElementById('leads').value = '';
-      document.getElementById('datos').value = '';
-      document.getElementById('nombre').value = '';
-      document.getElementById('whatsapp').value = '';
-
-      document.getElementById('semaforoContainer').classList.add('hidden');
-      document.getElementById('notification').classList.add('hidden');
+      // Mostrar resultados
+      var resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = "<h3>Resultados</h3>" +
+                            "<p><strong>SQL con agente humano:</strong> " + sqlHumano.toFixed(2) + "</p>" +
+                            "<p><strong>SQL con agente de IA:</strong> " + sqlIA.toFixed(2) + "</p>" +
+                            "<p><strong>Diferencia de SQL:</strong> " + diferenciaSQL.toFixed(2) + "</p>" +
+                            "<p><strong>Costo por SQL (humano):</strong> $" + costoPorSQLHumano.toFixed(2) + "</p>" +
+                            "<p><strong>Costo por SQL (IA):</strong> $" + costoPorSQLIA.toFixed(2) + "</p>";
     }
   </script>
 </body>
 </html>
+```
 
+### Cómo funciona el código:
+- **Entrada de datos:** El usuario ingresa la cantidad de leads mensuales, la tasa de conversión actual (en porcentaje), el costo mensual del agente humano, el costo del agente de IA y el factor de mejora en la conversión (por ejemplo, 1.5 o 5).
+- **Cálculos:**  
+  - Se calcula la cantidad de SQL generados con un agente humano usando:  
+    `SQL_humano = leads * (tasa de conversión / 100)`  
+  - Se calcula la cantidad de SQL generados con IA aplicando el factor de mejora:  
+    `SQL_IA = SQL_humano * factor de mejora`
+  - Se determina el costo por SQL en cada caso dividiendo el costo mensual entre la cantidad de SQL generados.
+- **Visualización:** Los resultados se muestran en una sección de la página, facilitando la comparación.
+
+Puedes personalizar el estilo y ampliar la funcionalidad según tus necesidades. ¡Espero que te resulte útil para tu sitio web!
