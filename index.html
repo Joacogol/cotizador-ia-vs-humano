@@ -110,7 +110,7 @@
       background: #fff;
       border-radius: 4px;
     }
-    /* Aseguramos márgenes homogéneos */
+    /* Márgenes homogéneos */
     .space-bottom {
       margin-bottom: 20px;
     }
@@ -127,18 +127,22 @@
     <div id="calculatorScreen" class="screen active">
       <h1>Calculadora: ¿Agente Humano o IA?</h1>
       <form id="calcForm">
-        <label for="monthlySalary">Salario mensual del agente humano (UYU):</label>
-        <input type="number" id="monthlySalary" class="calculator-input" value="80000" required>
+        <label for="monthlySalary">Salario mensual del agente humano (USD):</label>
+        <!-- 80000 UYU ≈ 1882 USD -->
+        <input type="number" id="monthlySalary" class="calculator-input" value="1882" required>
         
         <label for="contactsPerDay">Contactos calificados por día:</label>
         <input type="number" id="contactsPerDay" class="calculator-input" value="6" required>
-        <p style="font-size: 14px; color: var(--heading-color);">Nota: Se estima que 1,5 horas (90 min) permiten calificar 6 contactos (15 min cada uno).</p>
+        <p style="font-size: 14px; color: var(--heading-color);">
+          Nota: Se estima que 1,5 horas (90 min) permiten calificar 6 contactos (15 min cada uno).
+        </p>
         
         <label for="workingDays">Días laborables mensuales:</label>
         <input type="number" id="workingDays" class="calculator-input" value="20" required>
         
-        <label for="iaCost">Costo mensual del agente de IA (UYU):</label>
-        <input type="number" id="iaCost" class="calculator-input" value="15000" required>
+        <label for="iaCost">Costo mensual del agente de IA (USD):</label>
+        <!-- 15000 UYU ≈ 353 USD -->
+        <input type="number" id="iaCost" class="calculator-input" value="353" required>
         
         <button type="button" class="calculator-button" onclick="calculateResults()">Calcular</button>
       </form>
@@ -155,105 +159,123 @@
 
   <script>
     function calculateResults() {
-      // Datos de entrada
+      // Datos de entrada (en USD)
       var monthlySalary = parseFloat(document.getElementById("monthlySalary").value);
       var contactsPerDay = parseFloat(document.getElementById("contactsPerDay").value);
       var workingDays = parseFloat(document.getElementById("workingDays").value);
       var iaCost = parseFloat(document.getElementById("iaCost").value);
       
-      // Se asume jornada laboral fija de 9 horas = 540 minutos
+      // Jornada laboral fija de 9 horas = 540 minutos
       var totalDailyMinutes = 540;
       // Cada contacto toma 15 min
       var qualificationMinutes = contactsPerDay * 15;
       var fraction = qualificationMinutes / totalDailyMinutes;
       
-      // Salario asignado a calificar
+      // Salario asignado a calificar (en USD)
       var effectiveSalary = monthlySalary * fraction;
       
       // Total de contactos mensuales
       var monthlyContacts = contactsPerDay * workingDays;
       
-      // Costo por contacto
-      var humanCostPerContact = effectiveSalary / monthlyContacts;
-      var iaCostPerContact = iaCost / monthlyContacts;
+      // Costo por contacto, redondeado a enteros
+      var humanCostPerContact = Math.round(effectiveSalary / monthlyContacts);
+      var iaCostPerContact = Math.round(iaCost / monthlyContacts);
       
       // Comparativa y resumen:
       var summaryText = "";
       if (humanCostPerContact < iaCostPerContact) {
         summaryText = "El agente humano es más económico, con un costo por contacto de " +
-                  humanCostPerContact.toFixed(2) + " UYU, frente a " +
-                  iaCostPerContact.toFixed(2) + " UYU del agente de IA.";
+                  humanCostPerContact + " USD, frente a " +
+                  iaCostPerContact + " USD del agente de IA.";
       } else if (humanCostPerContact > iaCostPerContact) {
         summaryText = "El agente de IA resulta más económico, con un costo por contacto de " +
-                  iaCostPerContact.toFixed(2) + " UYU, frente a " +
-                  humanCostPerContact.toFixed(2) + " UYU del agente humano.";
+                  iaCostPerContact + " USD, frente a " +
+                  humanCostPerContact + " USD del agente humano.";
       } else {
-        summaryText = "Ambas opciones tienen el mismo costo por contacto (" + humanCostPerContact.toFixed(2) + " UYU).";
+        summaryText = "Ambas opciones tienen el mismo costo por contacto (" + humanCostPerContact + " USD).";
       }
       summaryText += " Además, la IA opera 24/7, lo que puede generar ventajas en rapidez y continuidad.";
       
-      // Crear contenido resumen
+      // Crear contenido resumen en HTML (todos los números enteros)
       var summaryHTML = `
         <h2>Agente Humano</h2>
-        <p>Salario mensual: ${monthlySalary.toFixed(2)} UYU</p>
+        <p>Salario mensual: ${Math.round(monthlySalary)} USD</p>
         <p>Tiempo dedicado a calificar: ${qualificationMinutes} minutos diarios</p>
-        <p>Salario asignado a calificar: ${effectiveSalary.toFixed(2)} UYU/mes</p>
+        <p>Salario asignado a calificar: ${Math.round(effectiveSalary)} USD/mes</p>
         <p>Contactos calificados mensualmente: ${monthlyContacts}</p>
-        <p>Costo por contacto (humano): ${humanCostPerContact.toFixed(2)} UYU</p>
+        <p>Costo por contacto (humano): ${humanCostPerContact} USD</p>
         <hr>
         <h2>Agente de IA</h2>
-        <p>Costo fijo mensual: ${iaCost.toFixed(2)} UYU</p>
-        <p>Costo por contacto (IA): ${iaCostPerContact.toFixed(2)} UYU</p>
+        <p>Costo fijo mensual: ${Math.round(iaCost)} USD</p>
+        <p>Costo por contacto (IA): ${iaCostPerContact} USD</p>
         <hr>
         <h2>Comparativa</h2>
         <p>${summaryText}</p>
       `;
       document.getElementById("resultsSummary").innerHTML = summaryHTML;
       
-      // Crear gráfico con Chart.js
-      if(window.myChart instanceof Chart){
-          window.myChart.destroy();
-      }
-      var ctx = document.getElementById('resultsChart').getContext('2d');
-      window.myChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-              labels: ['Agente Humano', 'Agente de IA'],
-              datasets: [{
-                  label: 'Costo por contacto (UYU)',
-                  data: [humanCostPerContact, iaCostPerContact],
-                  backgroundColor: [
-                    'rgba(0, 0, 0, 0.7)',
-                    'rgba(29, 30, 32, 0.7)'
-                  ],
-                  borderColor: [
-                    'rgba(0, 0, 0, 1)',
-                    'rgba(29, 30, 32, 1)'
-                  ],
-                  borderWidth: 1
-              }]
-          },
-          options: {
-              scales: {
-                  y: {
-                      beginAtZero: true,
-                      title: {
-                        display: true,
-                        text: 'Costo (UYU)'
-                      }
-                  }
-              },
-              plugins: {
-                legend: {
-                  display: false
-                }
-              }
-          }
-      });
-      
       // Mostrar resultados en pantalla nueva
       document.getElementById("calculatorScreen").classList.remove("active");
       document.getElementById("resultsScreen").classList.add("active");
+      
+      // Crear gráfico usando Chart.js, donde la barra del agente de IA tendrá el logo de SHOCK como patrón
+      var ctx = document.getElementById('resultsChart').getContext('2d');
+      
+      // Función para dibujar el gráfico con el patrón para la IA
+      function drawChart(iaPattern) {
+        if(window.myChart instanceof Chart){
+          window.myChart.destroy();
+        }
+        window.myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Agente Humano', 'Agente de IA'],
+            datasets: [{
+              label: 'Costo por contacto (USD)',
+              data: [humanCostPerContact, iaCostPerContact],
+              backgroundColor: [
+                'rgba(0, 0, 0, 0.7)', // color sólido para el humano
+                iaPattern           // patrón con el logo para la IA
+              ],
+              borderColor: [
+                'rgba(0, 0, 0, 1)',
+                'rgba(29, 30, 32, 1)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Costo (USD)'
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              }
+            }
+          }
+        });
+      }
+      
+      // Cargar el logo de SHOCK y crear un patrón para la barra del agente de IA
+      var img = new Image();
+      // Usamos el logo de Shock (puedes cambiar la URL si lo deseas)
+      img.src = "https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=296,fit=crop,q=95/dWxlQN2M8XIwW5wk/logo_encabezado-YX4PeyxqO9UGBLv0.png";
+      img.onload = function() {
+        var pattern = ctx.createPattern(img, 'repeat');
+        drawChart(pattern);
+      };
+      // Si la imagen ya está cargada
+      if (img.complete) {
+        var pattern = ctx.createPattern(img, 'repeat');
+        drawChart(pattern);
+      }
     }
     
     function goBack() {
