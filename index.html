@@ -43,6 +43,9 @@
     <label for="outHours">Horas fuera de servicio (cuando el comercial no califica) (horas):</label>
     <input type="number" id="outHours" value="15" required>
     
+    <label for="numContacts">Número de contactos mensuales:</label>
+    <input type="number" id="numContacts" value="100" required>
+    
     <button type="button" onclick="calculateSavings()">Calcular</button>
   </form>
   
@@ -55,6 +58,7 @@
       var monthlyHours = parseFloat(document.getElementById("monthlyHours").value);
       var activeTime = parseFloat(document.getElementById("activeTime").value);
       var outHours = parseFloat(document.getElementById("outHours").value);
+      var numContacts = parseFloat(document.getElementById("numContacts").value);
       
       // Cálculo del salario por hora
       var wagePerHour = monthlySalary / monthlyHours;
@@ -72,23 +76,37 @@
       // La IA trabaja 24/7, por lo que solo se considera el tiempo activo
       var totalIATime = activeTime;
       
-      // Costo por contacto en función del tiempo invertido
+      // Costo por contacto en función del tiempo invertido (convertimos a horas)
       var costHuman = (totalHumanTime / 60) * wagePerHour;
       var costIA = (totalIATime / 60) * wagePerHour;
       
-      // Ahorro en tiempo y costo
+      // Ahorro en tiempo y costo por contacto
       var timeSaved = totalHumanTime - totalIATime;
       var costSaved = costHuman - costIA;
+      
+      // Cálculo total mensual
+      var totalHumanCostMonthly = costHuman * numContacts;
+      var totalIACostMonthly = costIA * numContacts;
+      var totalTimeHumanMonthly = totalHumanTime * numContacts;
+      var totalTimeIAMonthly = totalIATime * numContacts;
       
       // Mostrar resultados en pantalla
       var resultDiv = document.getElementById("result");
       resultDiv.innerHTML = "<h2>Resultados</h2>" +
-        "<p><strong>Tiempo total de calificación (humano):</strong> " + totalHumanTime.toFixed(2) + " minutos</p>" +
-        "<p><strong>Tiempo total de calificación (IA):</strong> " + totalIATime.toFixed(2) + " minutos</p>" +
+        "<p><strong>Tiempo total de calificación por contacto (humano):</strong> " + totalHumanTime.toFixed(2) + " minutos</p>" +
+        "<p><strong>Tiempo total de calificación por contacto (IA):</strong> " + totalIATime.toFixed(2) + " minutos</p>" +
         "<p><strong>Costo por contacto (humano):</strong> " + costHuman.toFixed(2) + " UYU</p>" +
         "<p><strong>Costo por contacto (IA):</strong> " + costIA.toFixed(2) + " UYU</p>" +
-        "<p><strong>Tiempo ahorrado:</strong> " + timeSaved.toFixed(2) + " minutos</p>" +
-        "<p><strong>Ahorro en costo:</strong> " + costSaved.toFixed(2) + " UYU</p>";
+        "<hr>" +
+        "<p><strong>Total de contactos mensuales:</strong> " + numContacts + "</p>" +
+        "<p><strong>Costo total mensual (humano):</strong> " + totalHumanCostMonthly.toFixed(2) + " UYU</p>" +
+        "<p><strong>Costo total mensual (IA):</strong> " + totalIACostMonthly.toFixed(2) + " UYU</p>" +
+        "<p><strong>Tiempo total mensual de calificación (humano):</strong> " + totalTimeHumanMonthly.toFixed(2) + " minutos</p>" +
+        "<p><strong>Tiempo total mensual de calificación (IA):</strong> " + totalTimeIAMonthly.toFixed(2) + " minutos</p>" +
+        "<hr>" +
+        "<p><strong>Tiempo ahorrado por contacto:</strong> " + timeSaved.toFixed(2) + " minutos</p>" +
+        "<p><strong>Ahorro en costo por contacto:</strong> " + costSaved.toFixed(2) + " UYU</p>" +
+        "<p><strong>Ahorro total en costo mensual:</strong> " + (costSaved * numContacts).toFixed(2) + " UYU</p>";
     }
   </script>
 </body>
