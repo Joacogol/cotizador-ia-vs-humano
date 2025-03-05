@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Calculadora Shock IA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Google Fonts según el código proporcionado -->
+  <!-- Google Fonts -->
   <link href="https://cdn.zyrosite.com/u1/google-fonts/font-faces?family=Epilogue:wght@400;700;800&amp;family=Work+Sans:wght@300;400;500;700&amp;family=Poppins:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
   <!-- Incluimos Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -48,6 +48,7 @@
       border: 1px solid #ddd;
       padding: 20px;
       margin-bottom: 40px;
+      border-radius: 4px;
     }
     .screen.active {
       display: block;
@@ -101,14 +102,22 @@
     .back-button {
       margin-top: 20px;
     }
-    /* Aseguramos que los márgenes y espaciados sean homogéneos */
+    /* Separación y destacado para el gráfico */
+    #resultsChart {
+      margin-top: 40px;
+      padding: 20px;
+      border: 2px solid var(--primary-color);
+      background: #fff;
+      border-radius: 4px;
+    }
+    /* Aseguramos márgenes homogéneos */
     .space-bottom {
       margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
-  <!-- Cabecera con el logo de SHOCK -->
+  <!-- Cabecera con logo de SHOCK -->
   <header>
     <img src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=296,fit=crop,q=95/dWxlQN2M8XIwW5wk/logo_encabezado-YX4PeyxqO9UGBLv0.png" alt="Logo Shock">
   </header>
@@ -121,13 +130,7 @@
         <label for="monthlySalary">Salario mensual del agente humano (UYU):</label>
         <input type="number" id="monthlySalary" class="calculator-input" value="80000" required>
         
-        <label for="dailyHours">Horas laborales diarias (en horas):</label>
-        <input type="number" id="dailyHours" class="calculator-input" value="9" required>
-        
-        <label for="qualifyTime">Tiempo diario dedicado a calificar (minutos):</label>
-        <input type="number" id="qualifyTime" class="calculator-input" value="90" required>
-        
-        <label for="contactsPerDay">Contactos calificados por día (en ese tiempo):</label>
+        <label for="contactsPerDay">Contactos calificados por día:</label>
         <input type="number" id="contactsPerDay" class="calculator-input" value="6" required>
         <p style="font-size: 14px; color: var(--heading-color);">Nota: Se estima que 1,5 horas (90 min) permiten calificar 6 contactos (15 min cada uno).</p>
         
@@ -145,7 +148,7 @@
     <div id="resultsScreen" class="screen">
       <h1>Resultados</h1>
       <div class="result-summary" id="resultsSummary"></div>
-      <canvas id="resultsChart" class="space-bottom" style="max-width:100%;"></canvas>
+      <canvas id="resultsChart" class="space-bottom"></canvas>
       <button type="button" class="calculator-button back-button" onclick="goBack()">Volver a Calcular</button>
     </div>
   </div>
@@ -154,43 +157,46 @@
     function calculateResults() {
       // Datos de entrada
       var monthlySalary = parseFloat(document.getElementById("monthlySalary").value);
-      var dailyHours = parseFloat(document.getElementById("dailyHours").value);
-      var qualifyTime = parseFloat(document.getElementById("qualifyTime").value); // en minutos
       var contactsPerDay = parseFloat(document.getElementById("contactsPerDay").value);
       var workingDays = parseFloat(document.getElementById("workingDays").value);
       var iaCost = parseFloat(document.getElementById("iaCost").value);
       
-      // Cálculos para el agente humano:
-      // Se asume que solo se dedica a calificar durante 'qualifyTime' minutos, de un total de (dailyHours * 60)
-      var fraction = qualifyTime / (dailyHours * 60);
-      var effectiveSalary = monthlySalary * fraction;
-      var monthlyContacts = contactsPerDay * workingDays;
-      var humanCostPerContact = effectiveSalary / monthlyContacts;
+      // Se asume jornada laboral fija de 9 horas = 540 minutos
+      var totalDailyMinutes = 540;
+      // Cada contacto toma 15 min
+      var qualificationMinutes = contactsPerDay * 15;
+      var fraction = qualificationMinutes / totalDailyMinutes;
       
-      // Para la IA: el costo es fijo, distribuido en el mismo número de contactos mensuales
+      // Salario asignado a calificar
+      var effectiveSalary = monthlySalary * fraction;
+      
+      // Total de contactos mensuales
+      var monthlyContacts = contactsPerDay * workingDays;
+      
+      // Costo por contacto
+      var humanCostPerContact = effectiveSalary / monthlyContacts;
       var iaCostPerContact = iaCost / monthlyContacts;
       
       // Comparativa y resumen:
-      var summary = "";
+      var summaryText = "";
       if (humanCostPerContact < iaCostPerContact) {
-        summary = "El agente humano es más económico, con un costo por contacto de " +
+        summaryText = "El agente humano es más económico, con un costo por contacto de " +
                   humanCostPerContact.toFixed(2) + " UYU, frente a " +
                   iaCostPerContact.toFixed(2) + " UYU del agente de IA.";
       } else if (humanCostPerContact > iaCostPerContact) {
-        summary = "El agente de IA resulta más económico, con un costo por contacto de " +
+        summaryText = "El agente de IA resulta más económico, con un costo por contacto de " +
                   iaCostPerContact.toFixed(2) + " UYU, frente a " +
                   humanCostPerContact.toFixed(2) + " UYU del agente humano.";
       } else {
-        summary = "Ambas opciones tienen el mismo costo por contacto (" + humanCostPerContact.toFixed(2) + " UYU).";
+        summaryText = "Ambas opciones tienen el mismo costo por contacto (" + humanCostPerContact.toFixed(2) + " UYU).";
       }
+      summaryText += " Además, la IA opera 24/7, lo que puede generar ventajas en rapidez y continuidad.";
       
-      summary += " Además, la IA opera 24/7, lo que puede generar ventajas en rapidez y continuidad.";
-      
-      // Crear el contenido resumen
+      // Crear contenido resumen
       var summaryHTML = `
         <h2>Agente Humano</h2>
         <p>Salario mensual: ${monthlySalary.toFixed(2)} UYU</p>
-        <p>Tiempo dedicado a calificar: ${qualifyTime} minutos diarios</p>
+        <p>Tiempo dedicado a calificar: ${qualificationMinutes} minutos diarios</p>
         <p>Salario asignado a calificar: ${effectiveSalary.toFixed(2)} UYU/mes</p>
         <p>Contactos calificados mensualmente: ${monthlyContacts}</p>
         <p>Costo por contacto (humano): ${humanCostPerContact.toFixed(2)} UYU</p>
@@ -200,12 +206,11 @@
         <p>Costo por contacto (IA): ${iaCostPerContact.toFixed(2)} UYU</p>
         <hr>
         <h2>Comparativa</h2>
-        <p>${summary}</p>
+        <p>${summaryText}</p>
       `;
       document.getElementById("resultsSummary").innerHTML = summaryHTML;
       
       // Crear gráfico con Chart.js
-      // Primero destruimos cualquier instancia anterior (si es que ya se creó) para evitar duplicados.
       if(window.myChart instanceof Chart){
           window.myChart.destroy();
       }
@@ -246,13 +251,13 @@
           }
       });
       
-      // Cambiar de pantalla: ocultamos la calculadora y mostramos los resultados
+      // Mostrar resultados en pantalla nueva
       document.getElementById("calculatorScreen").classList.remove("active");
       document.getElementById("resultsScreen").classList.add("active");
     }
     
     function goBack() {
-      // Vuelve a mostrar el formulario y oculta los resultados
+      // Vuelve al formulario y oculta los resultados
       document.getElementById("resultsScreen").classList.remove("active");
       document.getElementById("calculatorScreen").classList.add("active");
     }
