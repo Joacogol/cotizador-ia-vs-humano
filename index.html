@@ -1,99 +1,94 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Cotizador: Agente de IA vs. Humano</title>
+  <title>Calculadora de Ahorro: IA vs Comercial</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
     }
     label {
       display: block;
       margin-top: 10px;
     }
     input {
-      padding: 5px;
       margin-top: 5px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
+      padding: 5px;
+      width: 300px;
     }
     .result {
       margin-top: 20px;
       padding: 10px;
-      background-color: #f2f2f2;
-      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Cotizador: Agente de IA vs. Humano</h2>
-
-    <label for="leads">Cantidad de leads mensuales:</label>
-    <input type="number" id="leads" placeholder="Ej. 1000" />
-
-    <label for="conversionRate">Tasa de conversión actual de Contacto a SQL (en %):</label>
-    <input type="number" id="conversionRate" placeholder="Ej. 30" />
-
-    <label for="humanCost">Costo mensual del agente humano (en $):</label>
-    <input type="number" id="humanCost" placeholder="Ej. 2000" />
-
-    <label for="aiCost">Costo mensual del agente de IA (en $):</label>
-    <input type="number" id="aiCost" placeholder="Ej. 1000" />
-
-    <label for="improvementFactor">
-      Factor de mejora en conversión con IA (por ejemplo, 1.5 para un aumento del 50% o 5 para un aumento del 400%):
-    </label>
-    <input type="number" step="0.1" id="improvementFactor" placeholder="Ej. 1.5" />
-
-    <button onclick="calcularCotizacion()">Calcular</button>
-
-    <div class="result" id="result"></div>
-  </div>
-
+  <h1>Calculadora de Ahorro: IA vs Comercial</h1>
+  <form id="calcForm">
+    <label for="monthlySalary">Salario mensual del comercial (UYU):</label>
+    <input type="number" id="monthlySalary" value="80000" required>
+    
+    <label for="monthlyHours">Horas laborales mensuales (ej.: 160):</label>
+    <input type="number" id="monthlyHours" value="160" required>
+    
+    <label for="activeTime">Tiempo de interacción activa por contacto (minutos):</label>
+    <input type="number" id="activeTime" value="15" required>
+    
+    <label for="outHours">Horas fuera de servicio (cuando el comercial no califica) (horas):</label>
+    <input type="number" id="outHours" value="15" required>
+    
+    <button type="button" onclick="calculateSavings()">Calcular</button>
+  </form>
+  
+  <div class="result" id="result"></div>
+  
   <script>
-    function calcularCotizacion() {
-      // Obtener los valores de entrada y convertir la tasa a decimal
-      var leads = parseFloat(document.getElementById('leads').value);
-      var conversionRate = parseFloat(document.getElementById('conversionRate').value) / 100;
-      var humanCost = parseFloat(document.getElementById('humanCost').value);
-      var aiCost = parseFloat(document.getElementById('aiCost').value);
-      var improvementFactor = parseFloat(document.getElementById('improvementFactor').value);
-
-      // Validar que se hayan ingresado todos los valores
-      if (isNaN(leads) || isNaN(conversionRate) || isNaN(humanCost) || isNaN(aiCost) || isNaN(improvementFactor)) {
-        alert("Por favor, complete todos los campos con valores numéricos válidos.");
-        return;
-      }
-
-      // Cálculo de SQL (Sales Qualified Leads)
-      var sqlHumano = leads * conversionRate;
-      var sqlIA = leads * conversionRate * improvementFactor;
-
-      // Evitar división por cero
-      var costoPorSQLHumano = sqlHumano > 0 ? humanCost / sqlHumano : 0;
-      var costoPorSQLIA = sqlIA > 0 ? aiCost / sqlIA : 0;
-
-      // Diferencia en la cantidad de SQL
-      var diferenciaSQL = sqlIA - sqlHumano;
-
-      // Mostrar resultados
-      var resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = "<h3>Resultados</h3>" +
-                            "<p><strong>SQL con agente humano:</strong> " + sqlHumano.toFixed(2) + "</p>" +
-                            "<p><strong>SQL con agente de IA:</strong> " + sqlIA.toFixed(2) + "</p>" +
-                            "<p><strong>Diferencia de SQL:</strong> " + diferenciaSQL.toFixed(2) + "</p>" +
-                            "<p><strong>Costo por SQL (humano):</strong> $" + costoPorSQLHumano.toFixed(2) + "</p>" +
-                            "<p><strong>Costo por SQL (IA):</strong> $" + costoPorSQLIA.toFixed(2) + "</p>";
+    function calculateSavings() {
+      // Obtener los valores de los inputs
+      var monthlySalary = parseFloat(document.getElementById("monthlySalary").value);
+      var monthlyHours = parseFloat(document.getElementById("monthlyHours").value);
+      var activeTime = parseFloat(document.getElementById("activeTime").value);
+      var outHours = parseFloat(document.getElementById("outHours").value);
+      
+      // Cálculo del salario por hora
+      var wagePerHour = monthlySalary / monthlyHours;
+      
+      // Probabilidad de recibir un contacto fuera del horario laboral
+      var probOut = outHours / 24;
+      
+      // Tiempo de espera promedio cuando el contacto llega fuera del horario (en minutos)
+      var avgDelay = (outHours * 60) / 2;
+      
+      // Tiempo total que se demora un humano en calificar el contacto:
+      // Tiempo activo + (probabilidad de retraso * tiempo de espera promedio)
+      var totalHumanTime = activeTime + (probOut * avgDelay);
+      
+      // La IA trabaja 24/7, por lo que solo se considera el tiempo activo
+      var totalIATime = activeTime;
+      
+      // Costo por contacto en función del tiempo invertido
+      var costHuman = (totalHumanTime / 60) * wagePerHour;
+      var costIA = (totalIATime / 60) * wagePerHour;
+      
+      // Ahorro en tiempo y costo
+      var timeSaved = totalHumanTime - totalIATime;
+      var costSaved = costHuman - costIA;
+      
+      // Mostrar resultados en pantalla
+      var resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = "<h2>Resultados</h2>" +
+        "<p><strong>Tiempo total de calificación (humano):</strong> " + totalHumanTime.toFixed(2) + " minutos</p>" +
+        "<p><strong>Tiempo total de calificación (IA):</strong> " + totalIATime.toFixed(2) + " minutos</p>" +
+        "<p><strong>Costo por contacto (humano):</strong> " + costHuman.toFixed(2) + " UYU</p>" +
+        "<p><strong>Costo por contacto (IA):</strong> " + costIA.toFixed(2) + " UYU</p>" +
+        "<p><strong>Tiempo ahorrado:</strong> " + timeSaved.toFixed(2) + " minutos</p>" +
+        "<p><strong>Ahorro en costo:</strong> " + costSaved.toFixed(2) + " UYU</p>";
     }
   </script>
 </body>
