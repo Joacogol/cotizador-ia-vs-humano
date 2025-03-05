@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Google Fonts según el código proporcionado -->
   <link href="https://cdn.zyrosite.com/u1/google-fonts/font-faces?family=Epilogue:wght@400;700;800&amp;family=Work+Sans:wght@300;400;500;700&amp;family=Poppins:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+  <!-- Incluimos Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --font-primary: 'Epilogue', sans-serif;
@@ -30,17 +32,27 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      margin-bottom: 20px;
     }
     header img {
       max-height: 50px;
     }
-    .calculator-container {
+    .container {
       max-width: 800px;
-      margin: 40px auto;
+      margin: 0 auto;
       padding: 20px;
-      border: 1px solid #ddd;
+      box-sizing: border-box;
     }
-    .calculator-container h1 {
+    .screen {
+      display: none;
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin-bottom: 40px;
+    }
+    .screen.active {
+      display: block;
+    }
+    h1 {
       font-family: var(--font-primary);
       font-size: 48px;
       text-align: center;
@@ -78,64 +90,68 @@
     .calculator-button:hover {
       background-color: var(--button-bg-hover);
     }
-    .result {
-      margin-top: 20px;
-      padding: 20px;
-      border-top: 1px solid #ccc;
-      font-size: 16px;
-      font-family: var(--font-secondary);
-    }
-    .result h2 {
-      font-family: var(--font-primary);
-      font-size: 32px;
-      color: var(--heading-color);
-      margin-bottom: 10px;
-    }
-    .result p {
+    .result-summary p, .result-summary h2 {
       margin: 5px 0;
     }
-    .result hr {
+    hr {
       margin: 20px 0;
       border: none;
       border-top: 1px solid #ccc;
     }
+    .back-button {
+      margin-top: 20px;
+    }
+    /* Aseguramos que los márgenes y espaciados sean homogéneos */
+    .space-bottom {
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
+  <!-- Cabecera con el logo de SHOCK -->
   <header>
-    <!-- Logo de SHOCK -->
     <img src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=296,fit=crop,q=95/dWxlQN2M8XIwW5wk/logo_encabezado-YX4PeyxqO9UGBLv0.png" alt="Logo Shock">
   </header>
-
-  <div class="calculator-container">
-    <h1>Calculadora: ¿Agente Humano o IA?</h1>
-    <form id="calcForm">
-      <label for="monthlySalary">Salario mensual del agente humano (UYU):</label>
-      <input type="number" id="monthlySalary" class="calculator-input" value="80000" required>
-      
-      <label for="dailyHours">Horas laborales diarias (ej.: 9):</label>
-      <input type="number" id="dailyHours" class="calculator-input" value="9" required>
-      
-      <label for="qualifyTime">Tiempo diario dedicado a calificar (minutos):</label>
-      <input type="number" id="qualifyTime" class="calculator-input" value="90" required>
-      
-      <label for="contactsPerDay">Contactos calificados por día (en ese tiempo):</label>
-      <input type="number" id="contactsPerDay" class="calculator-input" value="6" required>
-      <p style="font-size: 14px; color: var(--heading-color);">Nota: Se estima que 1,5 horas (90 min) permiten calificar 6 contactos (15 min cada uno).</p>
-      
-      <label for="workingDays">Días laborables mensuales:</label>
-      <input type="number" id="workingDays" class="calculator-input" value="20" required>
-      
-      <label for="iaCost">Costo mensual del agente de IA (UYU):</label>
-      <input type="number" id="iaCost" class="calculator-input" value="15000" required>
-      
-      <button type="button" class="calculator-button" onclick="calculateSavings()">Calcular</button>
-    </form>
-    <div class="result" id="result"></div>
+  
+  <div class="container">
+    <!-- Pantalla de la calculadora -->
+    <div id="calculatorScreen" class="screen active">
+      <h1>Calculadora: ¿Agente Humano o IA?</h1>
+      <form id="calcForm">
+        <label for="monthlySalary">Salario mensual del agente humano (UYU):</label>
+        <input type="number" id="monthlySalary" class="calculator-input" value="80000" required>
+        
+        <label for="dailyHours">Horas laborales diarias (en horas):</label>
+        <input type="number" id="dailyHours" class="calculator-input" value="9" required>
+        
+        <label for="qualifyTime">Tiempo diario dedicado a calificar (minutos):</label>
+        <input type="number" id="qualifyTime" class="calculator-input" value="90" required>
+        
+        <label for="contactsPerDay">Contactos calificados por día (en ese tiempo):</label>
+        <input type="number" id="contactsPerDay" class="calculator-input" value="6" required>
+        <p style="font-size: 14px; color: var(--heading-color);">Nota: Se estima que 1,5 horas (90 min) permiten calificar 6 contactos (15 min cada uno).</p>
+        
+        <label for="workingDays">Días laborables mensuales:</label>
+        <input type="number" id="workingDays" class="calculator-input" value="20" required>
+        
+        <label for="iaCost">Costo mensual del agente de IA (UYU):</label>
+        <input type="number" id="iaCost" class="calculator-input" value="15000" required>
+        
+        <button type="button" class="calculator-button" onclick="calculateResults()">Calcular</button>
+      </form>
+    </div>
+    
+    <!-- Pantalla de resultados -->
+    <div id="resultsScreen" class="screen">
+      <h1>Resultados</h1>
+      <div class="result-summary" id="resultsSummary"></div>
+      <canvas id="resultsChart" class="space-bottom" style="max-width:100%;"></canvas>
+      <button type="button" class="calculator-button back-button" onclick="goBack()">Volver a Calcular</button>
+    </div>
   </div>
 
   <script>
-    function calculateSavings() {
+    function calculateResults() {
       // Datos de entrada
       var monthlySalary = parseFloat(document.getElementById("monthlySalary").value);
       var dailyHours = parseFloat(document.getElementById("dailyHours").value);
@@ -145,12 +161,13 @@
       var iaCost = parseFloat(document.getElementById("iaCost").value);
       
       // Cálculos para el agente humano:
+      // Se asume que solo se dedica a calificar durante 'qualifyTime' minutos, de un total de (dailyHours * 60)
       var fraction = qualifyTime / (dailyHours * 60);
       var effectiveSalary = monthlySalary * fraction;
       var monthlyContacts = contactsPerDay * workingDays;
       var humanCostPerContact = effectiveSalary / monthlyContacts;
       
-      // Para la IA:
+      // Para la IA: el costo es fijo, distribuido en el mismo número de contactos mensuales
       var iaCostPerContact = iaCost / monthlyContacts;
       
       // Comparativa y resumen:
@@ -169,24 +186,75 @@
       
       summary += " Además, la IA opera 24/7, lo que puede generar ventajas en rapidez y continuidad.";
       
-      // Mostrar resultados
-      var resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = `
-        <h2>Resultados</h2>
-        <p><strong>Agente Humano:</strong></p>
+      // Crear el contenido resumen
+      var summaryHTML = `
+        <h2>Agente Humano</h2>
         <p>Salario mensual: ${monthlySalary.toFixed(2)} UYU</p>
         <p>Tiempo dedicado a calificar: ${qualifyTime} minutos diarios</p>
         <p>Salario asignado a calificar: ${effectiveSalary.toFixed(2)} UYU/mes</p>
         <p>Contactos calificados mensualmente: ${monthlyContacts}</p>
         <p>Costo por contacto (humano): ${humanCostPerContact.toFixed(2)} UYU</p>
         <hr>
-        <p><strong>Agente de IA:</strong></p>
+        <h2>Agente de IA</h2>
         <p>Costo fijo mensual: ${iaCost.toFixed(2)} UYU</p>
         <p>Costo por contacto (IA): ${iaCostPerContact.toFixed(2)} UYU</p>
         <hr>
-        <p><strong>Comparativa:</strong></p>
+        <h2>Comparativa</h2>
         <p>${summary}</p>
       `;
+      document.getElementById("resultsSummary").innerHTML = summaryHTML;
+      
+      // Crear gráfico con Chart.js
+      // Primero destruimos cualquier instancia anterior (si es que ya se creó) para evitar duplicados.
+      if(window.myChart instanceof Chart){
+          window.myChart.destroy();
+      }
+      var ctx = document.getElementById('resultsChart').getContext('2d');
+      window.myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+              labels: ['Agente Humano', 'Agente de IA'],
+              datasets: [{
+                  label: 'Costo por contacto (UYU)',
+                  data: [humanCostPerContact, iaCostPerContact],
+                  backgroundColor: [
+                    'rgba(0, 0, 0, 0.7)',
+                    'rgba(29, 30, 32, 0.7)'
+                  ],
+                  borderColor: [
+                    'rgba(0, 0, 0, 1)',
+                    'rgba(29, 30, 32, 1)'
+                  ],
+                  borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true,
+                      title: {
+                        display: true,
+                        text: 'Costo (UYU)'
+                      }
+                  }
+              },
+              plugins: {
+                legend: {
+                  display: false
+                }
+              }
+          }
+      });
+      
+      // Cambiar de pantalla: ocultamos la calculadora y mostramos los resultados
+      document.getElementById("calculatorScreen").classList.remove("active");
+      document.getElementById("resultsScreen").classList.add("active");
+    }
+    
+    function goBack() {
+      // Vuelve a mostrar el formulario y oculta los resultados
+      document.getElementById("resultsScreen").classList.remove("active");
+      document.getElementById("calculatorScreen").classList.add("active");
     }
   </script>
 </body>
