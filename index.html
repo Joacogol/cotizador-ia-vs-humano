@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Calculadora de Costo por Contacto: IA vs Humano | Patagon AI</title>
+  <title>Calculadora: Costo por Contacto (IA vs Humano) | Patagon AI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Se incluye el CSS principal de Patagon AI para mantener la identidad visual -->
   <link href="https://cdn.prod.website-files.com/66720261788977c9cce4348c/css/patagonai-2024.webflow.d4fdb0d7d.min.css" rel="stylesheet" type="text/css"/>
@@ -45,7 +45,7 @@
                     <h1 class="heading-style-h1">Calculadora: Costo por Contacto</h1>
                   </div>
                   <p class="text-size-medium text-color-secondary">
-                    Compara cuánto le cuesta a tu empresa calificar un contacto con un agente humano versus un agente de IA.
+                    Compara cuánto le cuesta a tu empresa calificar un contacto usando agentes humanos versus agentes de IA.
                   </p>
                 </div>
               </div>
@@ -57,6 +57,11 @@
                 </div>
                 <form id="calcForm">
                   <div class="calculator_inputs">
+                    <!-- Datos generales -->
+                    <div class="form_field-wrapper">
+                      <div>Número de agentes (humano e IA):</div>
+                      <input type="number" id="numAgents" class="calculator_input w-input" value="1" required>
+                    </div>
                     <!-- Datos del agente humano -->
                     <div class="form_field-wrapper">
                       <div>Salario mensual del agente humano (UYU):</div>
@@ -71,23 +76,19 @@
                       <input type="number" id="qualifyTime" class="calculator_input w-input" value="90" required>
                     </div>
                     <div class="form_field-wrapper">
-                      <div>Número de contactos calificados por día:</div>
+                      <div>Contactos calificados por agente por día:</div>
                       <input type="number" id="contactsPerDay" class="calculator_input w-input" value="10" required>
                     </div>
                     <div class="form_field-wrapper">
                       <div>Días laborables mensuales:</div>
                       <input type="number" id="workingDays" class="calculator_input w-input" value="20" required>
                     </div>
-                    <!-- Datos para el agente de IA -->
-                    <div class="form_field-wrapper">
-                      <div>Número de contactos mensuales calificados por la IA:</div>
-                      <input type="number" id="iaContacts" class="calculator_input w-input" value="200" required>
-                    </div>
+                    <!-- Datos para la IA (se asume misma capacidad por agente) -->
                     <button type="button" class="calculator_button w-button" onclick="calculateSavings()">Calcular</button>
                   </div>
                 </form>
                 <div class="calculator_result" id="result">
-                  <!-- Aquí se mostrarán los resultados -->
+                  <!-- Se mostrarán los resultados -->
                 </div>
               </div>
             </div>
@@ -99,43 +100,64 @@
 
   <script>
     function calculateSavings() {
-      // Datos del agente humano
+      // Obtener datos ingresados
+      var numAgents = parseFloat(document.getElementById("numAgents").value);
       var monthlySalary = parseFloat(document.getElementById("monthlySalary").value);
       var dailyHours = parseFloat(document.getElementById("dailyHours").value);
-      var qualifyTime = parseFloat(document.getElementById("qualifyTime").value); // en minutos
+      var qualifyTime = parseFloat(document.getElementById("qualifyTime").value); // minutos diarios destinados a calificar
       var contactsPerDay = parseFloat(document.getElementById("contactsPerDay").value);
       var workingDays = parseFloat(document.getElementById("workingDays").value);
       
-      // Datos de la IA
-      var iaContacts = parseFloat(document.getElementById("iaContacts").value);
-      
-      // Fracción del día que el agente dedica a calificar
+      // Cálculos para el agente humano:
+      // Fracción del salario asignada a calificar
       var fraction = qualifyTime / (dailyHours * 60);
-      // Costo mensual destinado a calificar contactos (solo esa tarea)
-      var effectiveMonthlySalary = monthlySalary * fraction;
+      // Costo mensual asignado a la tarea de calificar por agente
+      var effectiveSalary = monthlySalary * fraction;
+      // Capacidad mensual de calificación por agente:
+      var contactsPerAgent = workingDays * contactsPerDay;
+      // Costo por contacto para el agente humano
+      var humanCostPerContact = effectiveSalary / contactsPerAgent;
+      // Costo total mensual para todos los agentes humanos
+      var totalHumanCost = numAgents * effectiveSalary;
       
-      // Capacidad mensual del agente humano en calificación
-      var humanContacts = workingDays * contactsPerDay;
-      // Costo por contacto para el humano
-      var humanCostPerContact = effectiveMonthlySalary / humanContacts;
+      // Cálculos para el agente de IA:
+      // Costo fijo por agente de IA es 15,000 UYU mensuales
+      var iaCostPerAgent = 15000;
+      // Suponemos la misma capacidad de calificación por agente (contactsPerAgent)
+      var iaCostPerContact = iaCostPerAgent / contactsPerAgent;
+      // Costo total mensual para todos los agentes de IA
+      var totalIACost = numAgents * iaCostPerAgent;
       
-      // Para la IA, el costo mensual es fijo de 15.000 UYU
-      var aiMonthlyCost = 15000;
-      var aiCostPerContact = aiMonthlyCost / iaContacts;
+      // Comparativa y resumen:
+      var summary = "";
+      if (humanCostPerContact < iaCostPerContact) {
+        summary = "En términos de costo por contacto, el agente humano es más económico (" + humanCostPerContact.toFixed(2) + " UYU) que el agente de IA (" + iaCostPerContact.toFixed(2) + " UYU).";
+      } else if (humanCostPerContact > iaCostPerContact) {
+        summary = "En términos de costo por contacto, el agente de IA es más económico (" + iaCostPerContact.toFixed(2) + " UYU) que el agente humano (" + humanCostPerContact.toFixed(2) + " UYU).";
+      } else {
+        summary = "Ambas opciones tienen el mismo costo por contacto (" + humanCostPerContact.toFixed(2) + " UYU).";
+      }
+      
+      // Considera que la IA opera 24/7 y puede calificar en menor tiempo, lo que puede mejorar la conversión.
+      summary += " Sin embargo, la IA opera 24/7 y califica de forma casi instantánea, lo que puede generar ventajas en términos de rapidez y disponibilidad.";
       
       // Mostrar resultados
       var resultDiv = document.getElementById("result");
       resultDiv.innerHTML = `
         <h2 class="heading-style-h6 text-color-secondary">Resultados</h2>
         <p><strong>Agente Humano:</strong></p>
-        <p>Salario asignado a calificar contactos: ${effectiveMonthlySalary.toFixed(2)} UYU/mes</p>
-        <p>Número de contactos calificados mensualmente: ${humanContacts}</p>
+        <p>Salario asignado a calificar por agente: ${effectiveSalary.toFixed(2)} UYU/mes</p>
+        <p>Contactos calificados por agente por mes: ${contactsPerAgent}</p>
         <p>Costo por contacto (humano): ${humanCostPerContact.toFixed(2)} UYU</p>
+        <p>Costo total mensual (humano, ${numAgents} agente(s)): ${totalHumanCost.toFixed(2)} UYU</p>
         <hr>
         <p><strong>Agente de IA:</strong></p>
-        <p>Costo fijo mensual: ${aiMonthlyCost.toFixed(2)} UYU</p>
-        <p>Número de contactos calificados mensualmente (según ingreso): ${iaContacts}</p>
-        <p>Costo por contacto (IA): ${aiCostPerContact.toFixed(2)} UYU</p>
+        <p>Costo fijo por agente de IA: ${iaCostPerAgent.toFixed(2)} UYU/mes</p>
+        <p>Contactos calificados por agente por mes: ${contactsPerAgent}</p>
+        <p>Costo por contacto (IA): ${iaCostPerContact.toFixed(2)} UYU</p>
+        <p>Costo total mensual (IA, ${numAgents} agente(s)): ${totalIACost.toFixed(2)} UYU</p>
+        <hr>
+        <p><strong>Resumen:</strong> ${summary}</p>
       `;
     }
   </script>
