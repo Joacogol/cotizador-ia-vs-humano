@@ -158,7 +158,8 @@
   </div>
 
   <script>
-    // Registrar un plugin de Chart.js para superponer el logo de SHOCK en la barra del Agente de IA
+    // Registrar un plugin de Chart.js para superponer el logo de SHOCK en la barra del Agente de IA,
+    // manteniendo su proporción natural.
     Chart.register({
       id: 'centerLogoPlugin',
       afterDatasetsDraw(chart, args, pluginOptions) {
@@ -167,15 +168,16 @@
         if (meta.data.length > 1) {
           // Suponemos que el índice 1 es la barra del Agente de IA
           const iaBar = meta.data[1];
-          // Para barras verticales: iaBar.x es el centro horizontal,
-          // y la parte superior de la barra es iaBar.y, mientras que iaBar.base es el final (base)
           const centerX = iaBar.x;
           const centerY = (iaBar.y + iaBar.base) / 2;
           const logo = pluginOptions.logo;
-          const logoWidth = pluginOptions.logoWidth || 40;
-          const logoHeight = pluginOptions.logoHeight || 40;
           if (logo) {
-            ctx.drawImage(logo, centerX - logoWidth / 2, centerY - logoHeight / 2, logoWidth, logoHeight);
+            // Usar la anchura máxima deseada (por defecto 40) y calcular la altura manteniendo la proporción
+            const maxWidth = pluginOptions.logoWidth || 40;
+            const aspectRatio = logo.naturalWidth / logo.naturalHeight;
+            const logoWidthFinal = maxWidth;
+            const logoHeightFinal = maxWidth / aspectRatio;
+            ctx.drawImage(logo, centerX - logoWidthFinal / 2, centerY - logoHeightFinal / 2, logoWidthFinal, logoHeightFinal);
           }
         }
       }
@@ -257,7 +259,7 @@
               data: [humanCostPerContact, iaCostPerContact],
               backgroundColor: [
                 'rgba(0, 0, 0, 0.7)', // Color sólido para el agente humano
-                'rgba(0, 0, 0, 0.7)'  // Color para el agente de IA (se sobrepone el logo)
+                'rgba(0, 0, 0, 0.7)'  // Color para el agente de IA (se superpone el logo)
               ],
               borderColor: [
                 'rgba(0, 0, 0, 1)',
@@ -285,8 +287,7 @@
               },
               centerLogoPlugin: {
                 logo: logo,
-                logoWidth: 40,
-                logoHeight: 40
+                logoWidth: 40 // ancho máximo deseado (la altura se ajusta automáticamente)
               }
             }
           }
@@ -295,7 +296,7 @@
       
       // Cargar el logo de SHOCK y llamar a drawChart
       var img = new Image();
-      // URL del logo de Shock (se puede ajustar si es necesario)
+      // URL del logo de Shock
       img.src = "https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=296,fit=crop,q=95/dWxlQN2M8XIwW5wk/logo_encabezado-YX4PeyxqO9UGBLv0.png";
       img.onload = function() {
         drawChart(img);
