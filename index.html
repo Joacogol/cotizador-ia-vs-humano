@@ -45,7 +45,8 @@
                     <h1 class="heading-style-h1">Calculadora de Ahorro: IA vs Comercial</h1>
                   </div>
                   <p class="text-size-medium text-color-secondary">
-                    Compara el costo y el tiempo invertido en calificar un lead usando un comercial versus un agente de IA.
+                    Aunque el salario del comercial es fijo, su costo “efectivo” varía según la cantidad de contactos atendidos.
+                    Compara el costo y el tiempo invertido en calificar un lead con un comercial versus un agente de IA.
                   </p>
                 </div>
               </div>
@@ -100,50 +101,50 @@
       var outHours = parseFloat(document.getElementById("outHours").value);
       var numContacts = parseFloat(document.getElementById("numContacts").value);
       
-      // Calcular el costo por hora del comercial
+      // Calcular costo por hora del comercial
       var wagePerHour = monthlySalary / monthlyHours;
       
-      // Probabilidad de que el contacto llegue fuera del horario laboral (horas fuera / 24)
+      // Probabilidad de que el contacto llegue fuera del horario (horas fuera / 24)
       var probOut = outHours / 24;
       
       // Tiempo de espera promedio cuando el contacto llega fuera del horario (la mitad del período en minutos)
       var avgDelay = (outHours * 60) / 2;
       
-      // Tiempo total que se demora un humano en calificar un contacto:
+      // Tiempo total invertido por contacto (en minutos): tiempo activo + demora promedio
       var totalHumanTime = activeTime + (probOut * avgDelay);
       
-      // Costo por contacto (humano): convertir minutos a horas y multiplicar por el costo por hora
+      // Costo "efectivo" por contacto (convertir minutos a horas)
       var costHumanPerContact = (totalHumanTime / 60) * wagePerHour;
       
-      // Costo total mensual del proceso humano:
+      // Costo total mensual del comercial (variable según la cantidad de contactos que atiende)
       var humanMonthlyCost = costHumanPerContact * numContacts;
       
-      // Para el agente de IA, el costo mensual es fijo en 15.000 UYU
+      // Para el agente de IA, el costo es fijo: 15.000 UYU mensuales
       var aiMonthlyCost = 15000;
-      // Costo por contacto para la IA:
       var costIAPerContact = aiMonthlyCost / numContacts;
       
-      // Ahorro en tiempo (por contacto)
+      // Ahorro en tiempo por contacto (la diferencia entre el tiempo total invertido por el comercial y el tiempo activo que tarda la IA)
       var timeSaved = totalHumanTime - activeTime;
-      // Ahorro en costo mensual
+      
+      // Ahorro total mensual en costo
       var costSavingsMonthly = humanMonthlyCost - aiMonthlyCost;
       
       // Mostrar resultados
       var resultDiv = document.getElementById("result");
       resultDiv.innerHTML = `
         <h2 class="heading-style-h6 text-color-secondary">Resultados</h2>
-        <p><strong>Tiempo por contacto (humano):</strong> ${totalHumanTime.toFixed(2)} minutos</p>
-        <p><strong>Tiempo por contacto (IA):</strong> ${activeTime.toFixed(2)} minutos</p>
+        <p><strong>Tiempo invertido por contacto (comercial):</strong> ${totalHumanTime.toFixed(2)} minutos</p>
+        <p><strong>Tiempo invertido por contacto (IA):</strong> ${activeTime.toFixed(2)} minutos</p>
         <p><strong>Ahorro en tiempo por contacto:</strong> ${timeSaved.toFixed(2)} minutos</p>
         <hr>
-        <p><strong>Costo por contacto (humano):</strong> ${costHumanPerContact.toFixed(2)} UYU</p>
+        <p><strong>Costo por contacto (comercial):</strong> ${costHumanPerContact.toFixed(2)} UYU</p>
         <p><strong>Costo por contacto (IA):</strong> ${costIAPerContact.toFixed(2)} UYU</p>
         <hr>
-        <p><strong>Costo total mensual (humano):</strong> ${humanMonthlyCost.toFixed(2)} UYU</p>
+        <p><strong>Costo total mensual (comercial):</strong> ${humanMonthlyCost.toFixed(2)} UYU</p>
         <p><strong>Costo total mensual (IA):</strong> ${aiMonthlyCost.toFixed(2)} UYU</p>
         <hr>
         <p><strong>Ahorro mensual en costo:</strong> ${costSavingsMonthly.toFixed(2)} UYU</p>
-        <p><em>Nota: El costo del agente de IA es fijo en 15.000 UYU mensuales, sin importar el volumen de consultas.</em></p>
+        <p><em>Nota: Mientras más contactos atienda el comercial, el costo por contacto se diluye; sin embargo, su costo total se calcula en función del volumen atendido.</em></p>
       `;
     }
   </script>
