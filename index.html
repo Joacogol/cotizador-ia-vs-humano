@@ -1,35 +1,39 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <!-- Importante para que sea responsive en móviles -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cotizador IA vs Humano</title>
   <style>
+    /* Estilos generales */
     body {
       font-family: Arial, sans-serif;
       background-color: #f0f0f0;
       color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
       margin: 0;
+      padding: 0;
+      /* Dejamos que el contenido fluya y sea scrollable en móviles */
     }
+
+    /* Contenedor principal de cada pantalla */
     .container {
-      text-align: center;
-      width: 100%;
       max-width: 400px;
-      padding: 20px;
+      width: 90%;
+      margin: 20px auto;  /* centrado horizontal */
       background-color: #fff;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      margin: 10px;
+      padding: 20px;
+      box-sizing: border-box;
     }
+
     h1, h2 {
       color: #0056b3;
       font-size: 1.5em;
+      margin-top: 0;
     }
+
     input[type="number"], input[type="text"] {
       width: 100%;
       padding: 10px;
@@ -37,7 +41,9 @@
       border: 1px solid #ccc;
       border-radius: 5px;
       box-sizing: border-box;
+      font-size: 16px;
     }
+
     button {
       width: 100%;
       padding: 15px;
@@ -50,75 +56,132 @@
       font-size: 16px;
       transition: background-color 0.3s;
     }
+
     button:hover {
       background-color: #004494;
     }
+
     .hidden {
       display: none;
     }
+
+    /* Contenedor del gráfico */
     .chart-container {
       position: relative;
       margin: 20px auto;
       height: 300px;
       width: 100%;
     }
-    /* Semáforo */
+
+    /* Estilos del semáforo */
     .semaforo {
       width: 50px;
-      height: 150px;
-      background-color: #e0e0e0;
+      background-color: #ccc;
       border-radius: 25px;
       margin: 20px auto;
       display: flex;
+      flex-direction: column; /* rojo arriba, verde abajo */
       align-items: center;
-      justify-content: center;
+      justify-content: space-around;
+      padding: 10px 0;
     }
-    .semaforo .light {
+
+    .light {
       width: 30px;
       height: 30px;
       border-radius: 50%;
-      background-color: red; /* color por defecto */
+      background-color: #999; /* color “apagado” por defecto */
     }
-    /* Responsive para móviles */
+
+    /* Rojo y verde “apagados” por defecto */
+    .red {
+      background-color: #999;
+    }
+    .green {
+      background-color: #999;
+    }
+
+    /* Clases para encender cada luz */
+    .active-red {
+      background-color: red;
+    }
+    .active-green {
+      background-color: green;
+    }
+
+    /* Botón de notificación resaltado (si lo necesitas) */
+    .highlight-button {
+      font-size: 18px;
+      font-weight: bold;
+      background-color: #ff9800;
+      margin-top: 15px;
+    }
+
+    .highlight-button:hover {
+      background-color: #e68900;
+    }
+
+    /* Ajustes responsivos extra si deseas */
     @media (max-width: 600px) {
-      .container {
-        width: 90%;
-        padding: 15px;
-        margin: 10px;
+      h1, h2 {
+        font-size: 1.3em;
       }
     }
   </style>
 </head>
 <body>
+  <!-- Pantalla 1 -->
   <div class="container" id="screen1">
     <h1>Primeras Preguntas</h1>
-    <input type="number" id="leads" placeholder="¿Cuántos leads atienden tus agentes humanos por día?" required>
-    <input type="number" id="datos" placeholder="¿Cuántos datos debe completar el usuario antes de ser calificado?" required>
+    <input
+      type="number"
+      id="leads"
+      placeholder="¿Cuántos leads atienden tus agentes humanos por día?"
+      required
+    />
+    <input
+      type="number"
+      id="datos"
+      placeholder="¿Cuántos datos debe completar el usuario antes de ser calificado?"
+      required
+    />
     <button onclick="goToScreen2()">Continuar al cálculo</button>
   </div>
+
+  <!-- Pantalla 2 -->
   <div class="container hidden" id="screen2">
     <h1>Registro Obligatorio</h1>
-    <input type="text" id="nombre" placeholder="Tu nombre" required>
-    <input type="text" id="whatsapp" placeholder="Tu WhatsApp" required>
+    <input type="text" id="nombre" placeholder="Tu nombre" required />
+    <input type="text" id="whatsapp" placeholder="Tu WhatsApp" required />
     <button onclick="goToScreen3()">Ver mi ahorro</button>
   </div>
+
+  <!-- Pantalla 3 -->
   <div class="container hidden" id="screen3">
     <h1>Resultados</h1>
     <div class="chart-container">
       <canvas id="ahorroChart"></canvas>
     </div>
     <p id="ahorro"></p>
-    <!-- Contenedor para el semáforo -->
+
+    <!-- Semáforo con 2 luces: rojo arriba, verde abajo -->
     <div id="semaforoContainer" class="hidden">
       <div class="semaforo">
-        <div class="light"></div>
+        <div id="redLight" class="light red"></div>
+        <div id="greenLight" class="light green"></div>
       </div>
       <p id="semaforoText"></p>
     </div>
+
     <button onclick="restart()">Iniciar otro cálculo</button>
-    <p id="notification" class="hidden">Ya hemos avisado al equipo comercial para que te contacte.</p>
+    <p id="notification" class="hidden">
+      Ya hemos avisado al equipo comercial para que te contacte.
+    </p>
   </div>
+
+  <!-- Librería Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <script>
     function goToScreen2() {
       document.getElementById('screen1').classList.add('hidden');
@@ -140,8 +203,11 @@
     function calculateSavings() {
       const leads = parseFloat(document.getElementById('leads').value);
       const datos = parseFloat(document.getElementById('datos').value);
+
+      // Valores por defecto
       let tiempoHumano, tiempoIA;
 
+      // Lógica sencilla para asignar tiempos
       if (datos <= 5) {
         tiempoHumano = 15;
         tiempoIA = 2;
@@ -150,6 +216,7 @@
         tiempoIA = 3;
       }
 
+      // Cálculos
       const tiempoMensualHumano = (leads * tiempoHumano / 60) * 22;
       const tiempoMensualIA = (leads * tiempoIA / 60) * 22;
       const costoMensualHumano = (tiempoMensualHumano / 160) * 2000;
@@ -157,8 +224,12 @@
       const tiempoAhorrado = tiempoMensualHumano - tiempoMensualIA;
       const dineroAhorrado = costoMensualHumano - costoMensualIA;
 
-      document.getElementById('ahorro').innerText = `Tiempo ahorrado: ${tiempoAhorrado.toFixed(2)} horas/mes\nDinero ahorrado: $${dineroAhorrado.toFixed(2)} USD/mes`;
+      // Mostramos resultado en texto
+      document.getElementById('ahorro').innerText =
+        `Tiempo ahorrado: ${tiempoAhorrado.toFixed(2)} horas/mes\n` +
+        `Dinero ahorrado: $${dineroAhorrado.toFixed(2)} USD/mes`;
 
+      // Render del gráfico
       const ctx = document.getElementById('ahorroChart').getContext('2d');
       new Chart(ctx, {
         type: 'bar',
@@ -173,39 +244,53 @@
         options: {
           responsive: true,
           scales: {
-            y: {
-              beginAtZero: true
-            }
+            y: { beginAtZero: true }
           }
         }
       });
 
-      // Mostrar semáforo en lugar de confetti o papelitos
+      // Mostramos semáforo
       document.getElementById('semaforoContainer').classList.remove('hidden');
-      const light = document.querySelector('.semaforo .light');
+
+      const redLight = document.getElementById('redLight');
+      const greenLight = document.getElementById('greenLight');
       const semaforoText = document.getElementById('semaforoText');
+
+      // Reiniciamos luces
+      redLight.classList.remove('active-red');
+      greenLight.classList.remove('active-green');
+
+      // Si hay ahorro positivo => encender luz verde; si no, luz roja
       if (dineroAhorrado > 0) {
         semaforoText.innerText = "Califica para contratar un agente de IA";
-        light.style.backgroundColor = 'green';
+        greenLight.classList.add('active-green');
       } else {
         semaforoText.innerText = "No califica para agente de IA";
-        light.style.backgroundColor = 'red';
+        redLight.classList.add('active-red');
+      }
+
+      // Alerta por si leads es muy alto
+      if (leads > 1000) {
+        alert('¡Impactante ahorro! Has ingresado un número muy alto de leads.');
       }
     }
 
+    // Notificar a equipo comercial (si se requiere un botón extra)
     function notifySalesTeam() {
-      // Si fuera necesario notificar al equipo de ventas
       document.getElementById('notification').classList.remove('hidden');
     }
 
     function restart() {
+      // Reseteamos valores
       document.getElementById('screen1').classList.remove('hidden');
       document.getElementById('screen2').classList.add('hidden');
       document.getElementById('screen3').classList.add('hidden');
+
       document.getElementById('leads').value = '';
       document.getElementById('datos').value = '';
       document.getElementById('nombre').value = '';
       document.getElementById('whatsapp').value = '';
+
       document.getElementById('semaforoContainer').classList.add('hidden');
       document.getElementById('notification').classList.add('hidden');
     }
