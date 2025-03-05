@@ -2,42 +2,48 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <!-- Importante para que sea responsive en móviles -->
+  <!-- Meta para responsive en móviles -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cotizador IA vs Humano</title>
   <style>
-    /* Estilos generales */
+    /* Estilos base */
     body {
       font-family: Arial, sans-serif;
       background-color: #f0f0f0;
       color: #333;
       margin: 0;
       padding: 0;
-      /* Dejamos que el contenido fluya y sea scrollable en móviles */
     }
 
     /* Contenedor principal de cada pantalla */
     .container {
       max-width: 400px;
       width: 90%;
-      margin: 20px auto;  /* centrado horizontal */
+      margin: 10px auto; /* Margen vertical/horizontal reducido */
       background-color: #fff;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      padding: 20px;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+      padding: 15px; /* Menos padding */
       box-sizing: border-box;
     }
 
     h1, h2 {
       color: #0056b3;
-      font-size: 1.5em;
+      font-size: 1.3em; /* Ligera reducción de tamaño */
       margin-top: 0;
+      margin-bottom: 0.5em;
     }
 
-    input[type="number"], input[type="text"] {
+    p {
+      margin: 0.5em 0; /* Reduce espacio vertical en párrafos */
+      line-height: 1.3em;
+    }
+
+    input[type="number"],
+    input[type="text"] {
       width: 100%;
       padding: 10px;
-      margin: 10px 0;
+      margin: 8px 0; /* Menos margen vertical */
       border: 1px solid #ccc;
       border-radius: 5px;
       box-sizing: border-box;
@@ -46,7 +52,7 @@
 
     button {
       width: 100%;
-      padding: 15px;
+      padding: 12px; /* Menos padding vertical */
       margin-top: 10px;
       background-color: #0056b3;
       color: #fff;
@@ -68,8 +74,8 @@
     /* Contenedor del gráfico */
     .chart-container {
       position: relative;
-      margin: 20px auto;
-      height: 300px;
+      margin: 10px auto; /* Reducir margen */
+      height: 250px;     /* Reducir altura */
       width: 100%;
     }
 
@@ -78,7 +84,7 @@
       width: 50px;
       background-color: #ccc;
       border-radius: 25px;
-      margin: 20px auto;
+      margin: 10px auto;
       display: flex;
       flex-direction: column; /* rojo arriba, verde abajo */
       align-items: center;
@@ -90,15 +96,7 @@
       width: 30px;
       height: 30px;
       border-radius: 50%;
-      background-color: #999; /* color “apagado” por defecto */
-    }
-
-    /* Rojo y verde “apagados” por defecto */
-    .red {
-      background-color: #999;
-    }
-    .green {
-      background-color: #999;
+      background-color: #999; /* “Apagado” */
     }
 
     /* Clases para encender cada luz */
@@ -109,22 +107,19 @@
       background-color: green;
     }
 
-    /* Botón de notificación resaltado (si lo necesitas) */
-    .highlight-button {
-      font-size: 18px;
-      font-weight: bold;
-      background-color: #ff9800;
-      margin-top: 15px;
+    /* Animación de parpadeo (blink) */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    .blinking {
+      animation: blink 1s infinite;
     }
 
-    .highlight-button:hover {
-      background-color: #e68900;
-    }
-
-    /* Ajustes responsivos extra si deseas */
+    /* Responsivo extra */
     @media (max-width: 600px) {
       h1, h2 {
-        font-size: 1.3em;
+        font-size: 1.2em;
       }
     }
   </style>
@@ -167,8 +162,8 @@
     <!-- Semáforo con 2 luces: rojo arriba, verde abajo -->
     <div id="semaforoContainer" class="hidden">
       <div class="semaforo">
-        <div id="redLight" class="light red"></div>
-        <div id="greenLight" class="light green"></div>
+        <div id="redLight" class="light"></div>
+        <div id="greenLight" class="light"></div>
       </div>
       <p id="semaforoText"></p>
     </div>
@@ -204,10 +199,9 @@
       const leads = parseFloat(document.getElementById('leads').value);
       const datos = parseFloat(document.getElementById('datos').value);
 
-      // Valores por defecto
       let tiempoHumano, tiempoIA;
 
-      // Lógica sencilla para asignar tiempos
+      // Lógica básica
       if (datos <= 5) {
         tiempoHumano = 15;
         tiempoIA = 2;
@@ -224,7 +218,7 @@
       const tiempoAhorrado = tiempoMensualHumano - tiempoMensualIA;
       const dineroAhorrado = costoMensualHumano - costoMensualIA;
 
-      // Mostramos resultado en texto
+      // Mostramos resultado
       document.getElementById('ahorro').innerText =
         `Tiempo ahorrado: ${tiempoAhorrado.toFixed(2)} horas/mes\n` +
         `Dinero ahorrado: $${dineroAhorrado.toFixed(2)} USD/mes`;
@@ -249,39 +243,39 @@
         }
       });
 
-      // Mostramos semáforo
+      // Mostrar semáforo
       document.getElementById('semaforoContainer').classList.remove('hidden');
 
       const redLight = document.getElementById('redLight');
       const greenLight = document.getElementById('greenLight');
       const semaforoText = document.getElementById('semaforoText');
 
-      // Reiniciamos luces
-      redLight.classList.remove('active-red');
-      greenLight.classList.remove('active-green');
+      // Apagar luces previamente
+      redLight.className = 'light';
+      greenLight.className = 'light';
 
-      // Si hay ahorro positivo => encender luz verde; si no, luz roja
+      // Si hay ahorro => luz verde parpadea; si no, roja parpadea
       if (dineroAhorrado > 0) {
         semaforoText.innerText = "Califica para contratar un agente de IA";
-        greenLight.classList.add('active-green');
+        greenLight.classList.add('active-green', 'blinking');
       } else {
         semaforoText.innerText = "No califica para agente de IA";
-        redLight.classList.add('active-red');
+        redLight.classList.add('active-red', 'blinking');
       }
 
-      // Alerta por si leads es muy alto
+      // Alerta si leads es muy alto
       if (leads > 1000) {
         alert('¡Impactante ahorro! Has ingresado un número muy alto de leads.');
       }
     }
 
-    // Notificar a equipo comercial (si se requiere un botón extra)
+    // Notificar a equipo comercial (si quieres llamarlo en algún momento)
     function notifySalesTeam() {
       document.getElementById('notification').classList.remove('hidden');
     }
 
     function restart() {
-      // Reseteamos valores
+      // Reseteamos la UI
       document.getElementById('screen1').classList.remove('hidden');
       document.getElementById('screen2').classList.add('hidden');
       document.getElementById('screen3').classList.add('hidden');
@@ -297,4 +291,3 @@
   </script>
 </body>
 </html>
-
