@@ -19,47 +19,55 @@
     .container {
       max-width: 400px;
       width: 90%;
-      margin: 10px auto; /* Margen vertical/horizontal reducido */
+      margin: 5px auto; /* Menos margen vertical */
       background-color: #fff;
       border-radius: 10px;
       box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-      padding: 15px; /* Menos padding */
+      padding: 10px; /* Menos padding */
       box-sizing: border-box;
     }
 
     h1, h2 {
       color: #0056b3;
-      font-size: 1.3em; /* Ligera reducción de tamaño */
-      margin-top: 0;
-      margin-bottom: 0.5em;
+      font-size: 1.2em; /* Un poco más pequeño */
+      margin: 0;       /* Sin margen superior */
+      margin-bottom: 0.4em;
     }
 
     p {
-      margin: 0.5em 0; /* Reduce espacio vertical en párrafos */
-      line-height: 1.3em;
+      margin: 0.3em 0;   /* Reducir espacio vertical en párrafos */
+      line-height: 1.2em;
+    }
+
+    label {
+      display: block;
+      margin-top: 0.6em;
+      margin-bottom: 0.2em;
+      font-weight: bold;
+      font-size: 0.95em;
     }
 
     input[type="number"],
     input[type="text"] {
       width: 100%;
-      padding: 10px;
-      margin: 8px 0; /* Menos margen vertical */
+      padding: 8px;
+      margin: 0; /* Sin margen extra */
       border: 1px solid #ccc;
       border-radius: 5px;
       box-sizing: border-box;
-      font-size: 16px;
+      font-size: 15px;
     }
 
     button {
       width: 100%;
-      padding: 12px; /* Menos padding vertical */
-      margin-top: 10px;
+      padding: 10px; /* Menos padding vertical */
+      margin-top: 8px;
       background-color: #0056b3;
       color: #fff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 15px;
       transition: background-color 0.3s;
     }
 
@@ -74,8 +82,8 @@
     /* Contenedor del gráfico */
     .chart-container {
       position: relative;
-      margin: 10px auto; /* Reducir margen */
-      height: 250px;     /* Reducir altura */
+      margin: 5px auto; /* Reducir margen */
+      height: 230px;    /* Reducir altura */
       width: 100%;
     }
 
@@ -86,22 +94,26 @@
       border-radius: 25px;
       margin: 10px auto;
       display: flex;
-      flex-direction: column; /* rojo arriba, verde abajo */
+      flex-direction: column; /* rojo arriba, amarillo medio, verde abajo */
       align-items: center;
       justify-content: space-around;
-      padding: 10px 0;
+      padding: 8px 0;
+      gap: 5px; /* Espacio entre luces */
     }
 
     .light {
-      width: 30px;
-      height: 30px;
+      width: 25px;
+      height: 25px;
       border-radius: 50%;
-      background-color: #999; /* “Apagado” */
+      background-color: #999; /* “Apagado” por defecto */
     }
 
     /* Clases para encender cada luz */
     .active-red {
       background-color: red;
+    }
+    .active-yellow {
+      background-color: yellow;
     }
     .active-green {
       background-color: green;
@@ -116,10 +128,16 @@
       animation: blink 1s infinite;
     }
 
-    /* Responsivo extra */
+    /* Responsivo extra si deseas */
     @media (max-width: 600px) {
       h1, h2 {
-        font-size: 1.2em;
+        font-size: 1.1em;
+      }
+      label {
+        font-size: 0.9em;
+      }
+      button {
+        font-size: 14px;
       }
     }
   </style>
@@ -128,26 +146,24 @@
   <!-- Pantalla 1 -->
   <div class="container" id="screen1">
     <h1>Primeras Preguntas</h1>
-    <input
-      type="number"
-      id="leads"
-      placeholder="¿Cuántos leads atienden tus agentes humanos por día?"
-      required
-    />
-    <input
-      type="number"
-      id="datos"
-      placeholder="¿Cuántos datos debe completar el usuario antes de ser calificado?"
-      required
-    />
+    <label for="leads">¿Cuántos leads atienden tus agentes humanos por día?</label>
+    <input type="number" id="leads" required />
+
+    <label for="datos">¿Cuántos datos debe completar el usuario antes de ser calificado?</label>
+    <input type="number" id="datos" required />
+
     <button onclick="goToScreen2()">Continuar al cálculo</button>
   </div>
 
   <!-- Pantalla 2 -->
   <div class="container hidden" id="screen2">
     <h1>Registro Obligatorio</h1>
-    <input type="text" id="nombre" placeholder="Tu nombre" required />
-    <input type="text" id="whatsapp" placeholder="Tu WhatsApp" required />
+    <label for="nombre">Tu nombre</label>
+    <input type="text" id="nombre" required />
+
+    <label for="whatsapp">Tu WhatsApp</label>
+    <input type="text" id="whatsapp" required />
+
     <button onclick="goToScreen3()">Ver mi ahorro</button>
   </div>
 
@@ -159,10 +175,11 @@
     </div>
     <p id="ahorro"></p>
 
-    <!-- Semáforo con 2 luces: rojo arriba, verde abajo -->
+    <!-- Semáforo con 3 luces: rojo, amarillo, verde -->
     <div id="semaforoContainer" class="hidden">
       <div class="semaforo">
         <div id="redLight" class="light"></div>
+        <div id="yellowLight" class="light"></div>
         <div id="greenLight" class="light"></div>
       </div>
       <p id="semaforoText"></p>
@@ -201,20 +218,20 @@
 
       let tiempoHumano, tiempoIA;
 
-      // Lógica básica
+      // Lógica sencilla para asignar tiempos
       if (datos <= 5) {
-        tiempoHumano = 15;
-        tiempoIA = 2;
+        tiempoHumano = 15;  // minutos
+        tiempoIA = 2;       // minutos
       } else {
-        tiempoHumano = 35;
-        tiempoIA = 3;
+        tiempoHumano = 35;  // minutos
+        tiempoIA = 3;       // minutos
       }
 
       // Cálculos
-      const tiempoMensualHumano = (leads * tiempoHumano / 60) * 22;
+      const tiempoMensualHumano = (leads * tiempoHumano / 60) * 22; // 22 días/mes
       const tiempoMensualIA = (leads * tiempoIA / 60) * 22;
-      const costoMensualHumano = (tiempoMensualHumano / 160) * 2000;
-      const costoMensualIA = 300;
+      const costoMensualHumano = (tiempoMensualHumano / 160) * 2000; // 160 horas y 2000 USD/mes
+      const costoMensualIA = 300; // costo fijo
       const tiempoAhorrado = tiempoMensualHumano - tiempoMensualIA;
       const dineroAhorrado = costoMensualHumano - costoMensualIA;
 
@@ -246,19 +263,23 @@
       // Mostrar semáforo
       document.getElementById('semaforoContainer').classList.remove('hidden');
 
+      // Apagamos las 3 luces
       const redLight = document.getElementById('redLight');
+      const yellowLight = document.getElementById('yellowLight');
       const greenLight = document.getElementById('greenLight');
       const semaforoText = document.getElementById('semaforoText');
 
-      // Apagar luces previamente
       redLight.className = 'light';
+      yellowLight.className = 'light';
       greenLight.className = 'light';
 
-      // Si hay ahorro => luz verde parpadea; si no, roja parpadea
+      // Decidir qué luz parpadea
       if (dineroAhorrado > 0) {
+        // Califica: parpadea la verde
         semaforoText.innerText = "Califica para contratar un agente de IA";
         greenLight.classList.add('active-green', 'blinking');
       } else {
+        // No califica: parpadea la roja
         semaforoText.innerText = "No califica para agente de IA";
         redLight.classList.add('active-red', 'blinking');
       }
@@ -269,7 +290,7 @@
       }
     }
 
-    // Notificar a equipo comercial (si quieres llamarlo en algún momento)
+    // Notificar a equipo comercial (opcional)
     function notifySalesTeam() {
       document.getElementById('notification').classList.remove('hidden');
     }
@@ -291,3 +312,4 @@
   </script>
 </body>
 </html>
+
